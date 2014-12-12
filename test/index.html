@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="test">#test</div>
+<ul>
+    <li class="list">1</li>
+    <li class="list">2</li>
+    <li class="list">3</li>
+    <li class="list">4</li>
+    <li class="list">5</li>
+</ul>
+<script data-main="main" src="require.js"></script>
+<script>
+require(["../src/light"], function(light){
+    var $test = light('#test');
+    var $list = $('.list');
+    $list.each(function(index, element){
+        this.style.color = "red"
+        $(this).text(index + ' list')
+    });
+
+    console.log($test.text());
+    $test.text('i have chagned')
+
+    setTimeout(function (){
+        $list.html("ddd = " + Math.random());
+        console.log($test.html());
+        console.log($list.html());
+    }, 2000)
+
+    var a = $('.list');
+    //var b = a.first();
+    var c = a.last();
+
+    console.dir(a)
+    //console.dir(b)
+    console.dir(c)
+})
+</script>
+</body>
+</html>
