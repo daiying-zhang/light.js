@@ -157,10 +157,10 @@ function(toString, slice, splice, rHtml){
             return this.pushState([this[index]])
         },
         gt: function (index){
-
+            return this.pushState(this.slice(index + 1))
         },
         lt: function (index){
-
+            return this.pushState(this.slice(0, index))
         },
         first: function (){
             return this.eq(0)

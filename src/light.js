@@ -2,7 +2,7 @@
  * @fileOverview
  * @author daiying.zhang
  */
-define(["core", "manipulation", "css"], function(light){
+define(["core", "manipulation", "css", "data"], function(light){
 
     return window.light = window.$ = light
 });
