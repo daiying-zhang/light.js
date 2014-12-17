@@ -11,6 +11,7 @@ function(toString, slice, splice, rHtml){
     }
 
     $.fn = $.prototype;
+    $.light = "1.0.0";
 
     /**
      * extend
@@ -72,6 +73,7 @@ function(toString, slice, splice, rHtml){
         isFunction: function(obj) {
             return this.type(obj) === 'function'
         },
+        isString: $isString,
         isUndefined: function (obj){
             return obj === undefined
         },
@@ -112,7 +114,14 @@ function(toString, slice, splice, rHtml){
             }else{
                 return []
             }
-        }
+        },
+        expando: ('light' + light.light + Math.random()).replace(/\./g,''),
+        guid: (function(){
+            var count = 0;
+            return function (){
+                return ++count
+            }
+        })()
     });
 
     light.fn.extend(true, {
@@ -183,6 +192,10 @@ function(toString, slice, splice, rHtml){
 
     function $isArray(obj) {
         return $type(obj) === 'array'
+    }
+
+    function $isString(obj){
+        return $type(obj) === 'string'
     }
 
     return light
