@@ -25,7 +25,7 @@ function(toString, slice, splice, rHtml){
             type,
             isArray,
             isBool = typeof deep === 'boolean',
-            args = [].slice.call(arguments, 0),
+            args = slice.call(arguments, 0),
             len = args.length,
             i = 2;
         // .extend(object)        or .extend(true|false, object)
@@ -77,9 +77,19 @@ function(toString, slice, splice, rHtml){
         isUndefined: function (obj){
             return obj === undefined
         },
+        isNumber: function (obj){
+            var ps = Number(obj);
+            return !$.isArray(obj) && !Number.isNaN(ps)
+        },
         //isWindow: function (obj){
         //    return obj && obj.window === obj
         //},
+        isFunction: function (obj){
+            return $type(obj) === 'function'
+        },
+        isLight: function (obj){
+            return obj.constructor === light
+        },
         noop: function(){},
         each: function(obj, func){
             if(!this.isFunction(func)) return;
@@ -99,21 +109,47 @@ function(toString, slice, splice, rHtml){
             }
         },
         makeArray: function (selector, context){
-            var type = typeof selector, context = context || document;
+            var type = $type(selector), context = context || document;
             if(type === 'string'){
                 if(rHtml.test(selector)){
                     // html片段
                     var div = document.createElement('div');
                     div.innerHTML = selector;
-                    return div.childNodes
+                    return $.toArray(div.childNodes)
                 }else{
-                    return context.querySelectorAll(selector)
+                    return $.toArray(context.querySelectorAll(selector))
                 }
-            }else if(type === 'object' && selector.nodeType){
-                return [selector]
+            }else if(type === 'object' || type.match(/^html\w+element$/)){
+                return $.isLight(selector) ? selector : [selector]
             }else{
                 return []
             }
+        },
+        toArray: function(obj){
+            var result = [];
+            try{
+                result = slice.call(obj)
+            }catch(e){
+                var i = 0, len = obj.length;
+                if($.isNumber(len)){
+                    for(;i<len;i++){
+                        result.push(obj[i])
+                    }
+                }
+            }
+            return result
+        },
+        unique: function (obj){
+            var tmp = [], index;
+            for(var i= 0; i<obj.length; i++){
+                if(~(index = tmp.indexOf(obj[i]))){
+                    splice.call(obj, index, 1);
+                    i--
+                }else{
+                    tmp.push(obj[i])
+                }
+            }
+            return obj
         },
         expando: ('light' + light.light + Math.random()).replace(/\./g,''),
         guid: (function(){
@@ -129,18 +165,21 @@ function(toString, slice, splice, rHtml){
             //this.length = 0;
             this.selector = selector;
             this.context = context || document;
+            //var arr = $.makeArray(selector, this.context), len = arr.length;
+            //this.length = len;
+            //while(--len >= 0){
+            //    this[len] = arr[len]
+            //}
             var arr = $.makeArray(selector, this.context), len = arr.length;
             this.length = len;
-            while(--len >= 0){
-                this[len] = arr[len]
-            }
+            this.extend($.toArray(arr))
         },
         /**
          * 遍历所有元素，执行fn，fn接受两个参数`index`和`element`
          * @param {Function} fn
          * @returns {light.fn}
          */
-        each: function (fn){
+        each: function(fn){
             if($.isFunction(fn)){
                 for(var i = 0, len = this.length; i<len; i++) {
                     if(fn.call(this[i], i, this[i]) === false){
@@ -149,6 +188,9 @@ function(toString, slice, splice, rHtml){
                 }
             }
             return this
+        },
+        map: function (){
+
         },
         pushState: function (elems){
             var ret = $();
@@ -171,16 +213,23 @@ function(toString, slice, splice, rHtml){
         lt: function (index){
             return this.pushState(this.slice(0, index))
         },
+        not: function (){
+
+        },
+        add: function (){
+
+        },
         first: function (){
             return this.eq(0)
         },
         last: function (){
             return this.eq(this.length - 1)
         },
-        slice: function (returnArray){
-            var ret = slice.apply(this, arguments);
-            return returnArray ? ret : this.pushState(ret)
-        },
+        //slice: function (returnArray){
+        //    var ret = slice.apply(this, arguments);
+        //    return returnArray ? ret : this.pushState(ret)
+        //},
+        slice: slice,
         splice: splice
     });
 

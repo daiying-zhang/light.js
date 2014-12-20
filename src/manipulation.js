@@ -20,7 +20,7 @@ define(["core"], function(light){
             return this.each(function(){
                 var children = this.childNodes, len = children.length;
                 while(--len >= 0){
-                    this.removeChild(children[len])
+                    $(children[len]).clearData().remove();
                 }
             })
         },
@@ -30,7 +30,7 @@ define(["core"], function(light){
             })
         },
         append: function (){
-            
+            //todo complete .append()
         },
         appendTo: function (selector){
             var target = $(selector)[0];
