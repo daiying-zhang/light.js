@@ -81,7 +81,7 @@ define(["core"], function(light){
         },
         "is": function (selector){
             var res = false;
-            if(selector.constructor === light){
+            if($.isLight(selector)){
                 res = true;
                 // 如果是light对象，每个元素相同则相同
                 this.each(function (idx, el){

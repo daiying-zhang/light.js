@@ -10,7 +10,9 @@ define(["core"], function(light){
                 data = getDateset(dom),
                 len = arguments.length;
             if(!len){
-                return data
+                var _data = $.extend(true, {}, data);
+                delete _data._event;
+                return _data
             }
             var keyType = $.type(key);
             if(keyType === 'string'){
@@ -64,7 +66,7 @@ define(["core"], function(light){
         cache = cache || ($.cache = {});
         currCache = cache[id];
         currCache = currCache || (cache[id] = {});
-        return currCache || {};
+        return currCache;
     }
 
     function setData(dom, key, val){

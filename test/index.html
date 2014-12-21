@@ -12,7 +12,7 @@
 </head>
 <body>
 <main>
-    <div id="test">#test</div>
+    <div id="test" data-main="main-test" data-time="12:23:34">#test</div>
     <a href="http://imf2e.com" id="a" data-abc="abcd">haha~~</a>
     <ul class="li-first">
         <li class="list fist">1 .list.first</li>
@@ -28,6 +28,7 @@
         <li class="list">4 .list</li>
         <li class="list last">5 .list.last</li>
     </ul>
+    <input id="input" type="text"/>
 </main>
 <script data-main="main" id="scr" src="require.js"></script>
 <script>
@@ -56,6 +57,32 @@ require(["../src/light"], function(light){
     //console.dir(a)
     //console.dir(b)
     //console.dir(c)
+
+    function f1(e){
+        console.log(this.nodeName, this.className, this.innerHTML)
+        $(e.target).css('font-size', '34px')
+    }
+
+    function f2(e){
+        console.log(this, e, $(e.target)[0].value)
+    }
+
+    $('#test').on('click', f1);
+    $('#input').on('keyup', f2);
+
+    $('li').on('click', function(e){
+        console.log(this, $(e.target).html())
+    })
+
+    $('span.cls').on('click', function(e){
+        console.log("span.cls is clicked...")
+        e.stopPropagation()
+    });
+
+    $('#a').on('click', function(e){
+        console.log("preventDefault")
+        e.preventDefault()
+    })
 })
 </script>
 </body>

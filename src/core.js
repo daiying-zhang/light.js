@@ -79,7 +79,7 @@ function(toString, slice, splice, rHtml){
         },
         isNumber: function (obj){
             var ps = Number(obj);
-            return !$.isArray(obj) && !Number.isNaN(ps)
+            return !$.isArray(obj) && ps === ps
         },
         //isWindow: function (obj){
         //    return obj && obj.window === obj
@@ -88,7 +88,7 @@ function(toString, slice, splice, rHtml){
             return $type(obj) === 'function'
         },
         isLight: function (obj){
-            return obj.constructor === light
+            return obj.constructor && obj.constructor === light
         },
         noop: function(){},
         each: function(obj, func){
@@ -109,6 +109,9 @@ function(toString, slice, splice, rHtml){
             }
         },
         makeArray: function (selector, context){
+            if(!selector){
+                return []
+            }
             var type = $type(selector), context = context || document;
             if(type === 'string'){
                 if(rHtml.test(selector)){
@@ -119,7 +122,7 @@ function(toString, slice, splice, rHtml){
                 }else{
                     return $.toArray(context.querySelectorAll(selector))
                 }
-            }else if(type === 'object' || type.match(/^html\w+element$/)){
+            }else if(type === 'object' || type.match(/html\w+element$/)){
                 return $.isLight(selector) ? selector : [selector]
             }else{
                 return []

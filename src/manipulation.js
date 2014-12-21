@@ -7,7 +7,7 @@ define(["core"], function(light){
         html: function (htmlString){
             return htmlString ? this.each(function(){
                 this.innerHTML = htmlString
-            }) : this[0] ? this[0].innerHTML.toLowerCase() : ""
+            }) : this[0] ? this[0].innerHTML : ""
         },
         text: function (text){
             //IE8 support
