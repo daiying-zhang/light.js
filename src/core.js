@@ -3,8 +3,8 @@
  * @author daiying.zhang
  */
 
-define(["var/toString", "var/slice", "var/splice", "var/rHTMLTag"],
-function(toString, slice, splice, rHtml){
+define(["var/toString", "var/slice", "var/splice", "var/rHTMLTag", "var/hasOwn"],
+function(toString, slice, splice, rHtml, hasOwn){
     var $ = light;
     function light(selector, context){
         return new light.fn.init(selector, context)
@@ -45,7 +45,7 @@ function(toString, slice, splice, rHtml){
             for(var key in source){
                 // deep clone
                 if(deep){
-                    if(source.hasOwnProperty(key)){
+                    //if(hasOwn.call(source, key)){
                         type = $type(tmp = source[key]);
                         isArray = $isArray(tmp);
                         if(/^(object|array)$/.test(type)){
@@ -55,11 +55,11 @@ function(toString, slice, splice, rHtml){
                         }else{
                             target[key] = tmp
                         }
-                    }
+                    //}
                 }else{
-                    if(source.hasOwnProperty(key)){
+                    //if(hasOwn.call(source, key)){
                         target[key] = source[key]
-                    }
+                    //}
                 }
             }
         }
@@ -122,7 +122,7 @@ function(toString, slice, splice, rHtml){
                 }else{
                     return $.toArray(context.querySelectorAll(selector))
                 }
-            }else if(type === 'object' || type.match(/html\w+element$/)){
+            }else if(type === 'object' || type.match(/html(?:\w+)?element$/)){
                 return $.isLight(selector) ? selector : [selector]
             }else{
                 return []
@@ -248,6 +248,18 @@ function(toString, slice, splice, rHtml){
 
     function $isString(obj){
         return $type(obj) === 'string'
+    }
+
+
+    if(!$.isFunction([].indexOf)){
+        Array.prototype.indexOf = function(ele){
+            for(var i= 0, len = this.length; i < len; i++){
+                if(this[i] === ele){
+                    return i
+                }
+            }
+            return -1
+        }
     }
 
     return light

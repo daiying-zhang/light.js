@@ -29,8 +29,11 @@ define(["core"], function(light){
                 this.parentNode.removeChild(this)
             })
         },
-        append: function (){
-            //todo complete .append()
+        append: function (elem){
+            //todo elem maybe a html string
+            return this.each(function(){
+                this.appendChild(elem)
+            })
         },
         appendTo: function (selector){
             var target = $(selector)[0];
@@ -39,6 +42,12 @@ define(["core"], function(light){
             })
         },
         prepend: function (){
+
+        },
+        prependTo: function (){
+
+        },
+        wrap: function (){
 
         }
     })

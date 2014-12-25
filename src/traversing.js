@@ -147,13 +147,29 @@ define(["core"], function(light){
     });
 
     function match(el, selector){
-        var res = false, type = light.type(selector);
+        var res = false, type = light.type(selector),
+            matches = el.matches || el.matchesSelector || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector || el.oMatchesSelector;
 
         if(type === "string"){
-            res = (el.matches || el.matchesSelector || el.msMatchesSelector || el.mozMatchesSelector || el.webkitMatchesSelector || el.oMatchesSelector).call(el, selector);
+            res = matches ? matches.call(el, selector) : matchIE8(el, selector);
         }else{
             res = el === selector
         }
         return res
+    }
+
+    // Support IE 8
+    function matchIE8(elem, selector){
+        // http://tanalin.com/en/blog/2012/12/matches-selector-ie8/
+        var elems = elem.parentNode.querySelectorAll(selector),
+            count = elems.length;
+
+        for (var i = 0; i < count; i++) {
+            if (elems[i] === elem) {
+                return true;
+            }
+        }
+
+        return false;
     }
 });

@@ -28,11 +28,25 @@
         <li class="list">4 .list</li>
         <li class="list last">5 .list.last</li>
     </ul>
+    <div id="aa">
+        <p>aaaa</p>
+        <p>
+            <div>bbbb</div>
+            <div class="c">cccc
+                <i>dddddd</i>
+            </div>
+        </p>
+    </div>
     <input id="input" type="text"/>
+    <input id="input1" type="text"/>
+
+    <input type="radio" id="sex1" name="sex" value="1" checked/> 男
+    <input type="radio" id="sex2" name="sex" value="2"/> 女
 </main>
 <script data-main="main" id="scr" src="require.js"></script>
 <script>
 require(["../src/light"], function(light){
+    var start = +new Date;
     var $test = light('#test');
     var $list = $('.list');
     $list.each(function(index, element){
@@ -43,6 +57,8 @@ require(["../src/light"], function(light){
 
     //console.log($test.text());
     $test.text('i have chagned')
+    var msg = +new Date - start;
+    console.log("total time: ", msg , 'ms')
 
 //    setTimeout(function (){
 //        $list.html("ddd = " + Math.random());
@@ -71,17 +87,33 @@ require(["../src/light"], function(light){
     $('#input').on('keyup', f2);
 
     $('li').on('click', function(e){
-        console.log(this, $(e.target).html())
-    })
-
-    $('span.cls').on('click', function(e){
-        console.log("span.cls is clicked...")
-        e.stopPropagation()
+        console.log("========================================");
+        console.log("event         :: ", e);
+        console.log("target        :: ", e.target);
+        console.log("currentTarget :: ", e.currentTarget.innerHTML)
     });
 
+    $('li').on('click','.cls', function(eve){
+        $(eve.currentTarget).css('background', 'red');
+        eve.stopPropagation()
+    });
+
+//    $('span.cls').on('click', function(e){
+//        console.log("span.cls is clicked...")
+//        e.stopPropagation()
+//    });
+
     $('#a').on('click', function(e){
-        console.log("preventDefault")
+        console.log("preventDefault");
         e.preventDefault()
+    })
+
+    $('#aa').on('click', '.c', function (eve){
+        console.log("click", eve.target, eve.currentTarget);
+        console.log(".c clicked")
+        eve.stopPropagation()
+    }).on('click', function(eve){
+        console.log("#aa clicked")
     })
 })
 </script>

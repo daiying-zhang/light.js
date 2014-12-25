@@ -15,7 +15,6 @@ define(["core"], function(light){
                 if(type === 'string'){
                     this.style[key] = val
                 }else if(type === 'object'){
-                    console.log("objdec");
                     for(var _key in key){
                         this.style[_key] = key[_key]
                     }
