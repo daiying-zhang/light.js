@@ -123,6 +123,39 @@ require(["../src/light"], function(light){
     }).on('click', function(eve){
         console.log("#aa clicked")
     })
+
+
+
+
+    //var xhr = $.ajax('http://zdying.com/api/snippet.html', {
+    //var xhr = $.ajax('http://zdying.com/api/weather', {
+    var xhr = $.ajax('http://zdying.com/api/test.js', {
+        type: "POST",
+        dataType: 'script',
+        success: function(json){
+            console.log("option.success: json = ", json)
+        }
+    });
+//    var xhr = $.post('http://zdying.com/api/weather', "name=223&fjfjf=3434", function(json){
+//        console.log("option.success: json = ", json)
+//    });
+
+    xhr.done(function(args){
+        console.log("xhr.done: args = ", args)
+    }).done(function(args){
+        console.log("xhr.done: [args] = ", args)
+    }, function(args){
+        console.log("xhr.done: [[args]] = ", args)
+    }).fail(function(args){
+        console.log("xhr.fail: args = ", args)
+    })
+
+    setTimeout(function(){
+        xhr.done(function(args){
+            console.log("xhr.done: [[[args]]] = ", args);
+            //$('body').append(args)
+        })
+    }, 2000)
 })
 </script>
 </body>

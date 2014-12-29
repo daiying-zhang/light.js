@@ -56,27 +56,18 @@ define(["core"], function(light){
                 }
             })
         },
-        addClass: function (cls){
-            return this.each(function (){
-                var classList = getClassList(this);
-                classList.add(cls)
-            })
-        },
-        removeClass: function (cls){
-            return this.each(function (){
-                var classList = getClassList(this);
-                classList.remove(cls)
-            })
-        },
-        toggleClass: function (cls){
-            return this.each(function (){
-                var classList = getClassList(this);
-                classList.toggle(cls)
-            })
-        },
         hasClass: function (cls){
             return getClassList(this[0]).contains(cls)
         }
+    });
+
+    light.each(["add", "remove", "toggle"], function(i, e){
+         light.fn[e + 'Class'] = function(cls){
+             return this.each(function (){
+                 var classList = getClassList(this);
+                 classList[e](cls)
+             })
+         }
     });
 
     function getClassList(elem){

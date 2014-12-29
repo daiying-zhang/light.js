@@ -123,6 +123,30 @@
     }).on('click', function(eve){
         console.log("#aa clicked")
     })
+
+
+
+var xhr = $.ajax('http://zdyingd.com/api/weather', {
+    success: function(json){
+        console.log("option.success: json = ", json)
+    }
+});
+
+xhr.done(function(args){
+    console.log("xhr.done: args = ", args)
+}).done(function(args){
+    console.log("xhr.done: [args] = ", args)
+}, function(args){
+    console.log("xhr.done: [[args]] = ", args)
+}).fail(function(args){
+    console.log("xhr.fail: args = ", args)
+})
+
+setTimeout(function(){
+    xhr.done(function(args){
+        console.log("xhr.done: [[[args]]] = ", args)
+    })
+}, 2000)
 //})
 </script>
 </body>
