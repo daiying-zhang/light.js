@@ -142,7 +142,7 @@ define(["core"], function(light){
             this.each(function (){
                 result = result.concat($.makeArray(selector, this))
             });
-            return this.pushState($.concat(result))
+            return this.pushState(result)
         }
     });
 

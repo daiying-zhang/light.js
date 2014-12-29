@@ -50,10 +50,10 @@
         <input type="radio" id="sex2" name="sex" value="2"/> 女
     </form>
 </main>
-<script data-main="main" id="scr" src="require.js"></script>
-<!--<script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>-->
+<!--<script data-main="main" id="scr" src="require.js"></script>-->
+<script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
 <script>
-require(["../src/light"], function(light){
+//require(["../src/light"], function(light){
     var start = +new Date;
     //var $test = $('#test');
     var $list = $('.list');
@@ -123,7 +123,7 @@ require(["../src/light"], function(light){
     }).on('click', function(eve){
         console.log("#aa clicked")
     })
-})
+//})
 </script>
 </body>
 </html>

@@ -8,15 +8,28 @@ define(["core"], function(light){
             var type = $.type(key);
             // get
             if(arguments.length === 1 && type === 'string'){
-                return this[0] ? getComputedStyle(this[0])[key] : ''
+                return getStyle(this[0], key.camelize())
             }
+
             // set
+            //function setStyle(dom, key, val){
+            //    var style = dom.style;
+            //    if(key.indexOf('-') !== -1 && style.setProperty){
+            //        style.setProperty(key, val, '')
+            //    }else{
+            //        style[key] = val
+            //    }
+            //}
             return this.each(function(){
                 if(type === 'string'){
-                    this.style[key] = val
+                    // FireFox does not support proper name like `font-size`
+                    // Should use `fontSize` or use `HTMLElement.style.setProperty()`
+                    this.style[key.camelize()] = val;
+                    //setStyle(this, key, val)
                 }else if(type === 'object'){
                     for(var _key in key){
-                        this.style[_key] = key[_key]
+                        this.style[_key.camelize()] = key[_key];
+                        //setStyle(this, _key, key[_key])
                     }
                 }
             })
@@ -101,5 +114,10 @@ define(["core"], function(light){
                 setClass()
             }
         })
+    }
+
+    function getStyle(dom, key){
+        var gcs = window.getComputedStyle;
+        return dom ? gcs ? gcs(dom)[key] : dom.currentStyle[key] : ''
     }
 });

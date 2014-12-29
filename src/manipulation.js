@@ -30,22 +30,45 @@ define(["core"], function(light){
             })
         },
         append: function (elem){
-            //todo elem maybe a html string
-            return this.each(function(){
-                this.appendChild(elem)
+            light.isString(elem) && (elem = light(elem));
+            return this.each(function(i,e){
+                if(light.isLight(elem)){
+                    elem.each(function (){
+                        e.appendChild(this)
+                    })
+                }else{
+                    e.appendChild(elem)
+                }
             })
         },
         appendTo: function (selector){
-            var target = $(selector)[0];
-            return this.each(function(){
-                target.appendChild(this)
+            var target = $(selector), len = target.length;
+            return this.each(function(i,e){
+                target.each(function (j, el){
+                    el.appendChild(len > 1 && j > 0 ? e.cloneNode(true) : e)
+                })
             })
         },
-        prepend: function (){
-
+        prepend: function (elem){
+            //todo 重构代码  & 修复bug，elem，可能为数组
+            light.isString(elem) && (elem = light(elem));
+            return this.each(function(i,e){
+                if(light.isLight(elem)){
+                    elem.each(function (){
+                        e.insertBefore(this, e.firstChild)
+                    })
+                }else{
+                    e.insertBefore(elem, e.firstChild)
+                }
+            })
         },
-        prependTo: function (){
-
+        prependTo: function (selector){
+            var target = $(selector), len = target.length;
+            return this.each(function(i,e){
+                target.each(function (j, el){
+                    el.insertBefore(len > 1 && j > 0 ? e.cloneNode(true) : e, el.firstChild)
+                })
+            })
         },
         wrap: function (){
 

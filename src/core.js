@@ -81,11 +81,26 @@ function(toString, slice, splice, rHtml, hasOwn){
             var ps = Number(obj);
             return !$.isArray(obj) && ps === ps
         },
-        //isWindow: function (obj){
-        //    return obj && obj.window === obj
-        //},
+        isWindow: function (obj){
+            return obj && obj.window === obj
+        },
         isFunction: function (obj){
             return $type(obj) === 'function'
+        },
+        isArrayLike: function (obj){
+            var length = obj.length,
+                type = light.type( obj );
+
+            if ( type === "function" || light.isWindow( obj ) ) {
+                return false;
+            }
+
+            if ( obj.nodeType === 1 && length ) {
+                return true;
+            }
+
+            return type === "array" || length === 0 ||
+                typeof length === "number" && length > 0 && ( length - 1 ) in obj;
         },
         isLight: function (obj){
             return obj.constructor && obj.constructor === light
@@ -93,20 +108,30 @@ function(toString, slice, splice, rHtml, hasOwn){
         noop: function(){},
         each: function(obj, func){
             if(!this.isFunction(func)) return;
-            var type = this.type(obj);
-            if(type === 'array'){
+            var isArrayLike = this.isArrayLike(obj);
+            if(isArrayLike){
                 for(var i = 0, len = obj.length; i<len; i++){
                     if(func.call(obj[i], i, obj[i]) === false){
                         return
                     }
                 }
-            }else if(type === 'object'){
+            }else{
                 for(var key in obj){
                     if(func.call(obj[key], key, obj[key]) === false){
                         return
                     }
                 }
             }
+            return obj
+        },
+        map: function (obj, fn){
+            var ret = [], result;
+            light.each(obj, function (k, v){
+                if((result = fn.call(this, k, v)) != null){
+                    ret.push(result)
+                }
+            });
+            return [].concat(ret)
         },
         makeArray: function (selector, context){
             if(!selector){
@@ -160,7 +185,13 @@ function(toString, slice, splice, rHtml, hasOwn){
             return function (){
                 return ++count
             }
-        })()
+        })(),
+        omit: function (){
+
+        },
+        pick: function (){
+
+        }
     });
 
     light.fn.extend(true, {
@@ -183,17 +214,17 @@ function(toString, slice, splice, rHtml, hasOwn){
          * @returns {light.fn}
          */
         each: function(fn){
-            if($.isFunction(fn)){
+            //if($.isFunction(fn)){
                 for(var i = 0, len = this.length; i<len; i++) {
                     if(fn.call(this[i], i, this[i]) === false){
                         break
                     }
                 }
-            }
+            //}
             return this
         },
-        map: function (){
-
+        map: function (fn){
+            return this.pushState(light.map(this, fn))
         },
         pushState: function (elems){
             var ret = $();
@@ -251,6 +282,8 @@ function(toString, slice, splice, rHtml, hasOwn){
     }
 
 
+    //TODO 移动到对应的文件中
+    // extend build-in objects
     if(!$.isFunction([].indexOf)){
         Array.prototype.indexOf = function(ele){
             for(var i= 0, len = this.length; i < len; i++){
@@ -259,6 +292,17 @@ function(toString, slice, splice, rHtml, hasOwn){
                 }
             }
             return -1
+        }
+    }
+
+    if(!$.isFunction("".camelize)){
+        String.prototype.camelize = function(){
+            if(this.indexOf('_') < 0 && this.indexOf('-') < 0){
+                return this
+            }
+            return this.replace(/[-_]([^-_])/, function(match, letter){
+                return letter.toUpperCase()
+            })
         }
     }
 

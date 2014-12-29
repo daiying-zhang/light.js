@@ -3,5 +3,5 @@
  * @author daiying.zhang
  */
 define(function (){
-    return /^\s*<(\w+)\s+[^>]+>/
+    return /^\s*<(\w+)(\s+[^>]+)?>/
 });

@@ -61,7 +61,7 @@ define(["core","var/slice"], function(light, slice){
                             //}else{
                             //    triggerHandel(ele, type, eve)
                             //}
-                            triggerHandel(ele, type, eve)
+                            triggerHandel(null, ele, type, eve)
                         });
                         //ele = null
                     })
@@ -103,26 +103,26 @@ define(["core","var/slice"], function(light, slice){
          *    eve.trigger('click', [param1, param2])
          */
         trigger : function(type){
+            var args = arguments;
             return this.each(function(){
-                if($.isFunction(this[type])){
-                    this[type]()
-                }else{
-                    triggerHandel(this, type, {type: type});
-                }
+                //if($.isFunction(this[type])){
+                    //todo 这里有问题
+                //    this[type]()
+                //}else{
+                    triggerHandel(args, this, type, {type: type, timeStamp: +new Date, isTrigger: true});
+                //}
             })
         }
     });
 
-    function triggerHandel(self, type, eve, selector){
+    function triggerHandel(args, self, type, eve, selector){
         if(!type){return}
 
         // 1 trigger delegated events
-        var hs = $(self).data('_delegate'), len, i = 0, args = slice.call(arguments, 1);
+        var hs = $(self).data('_delegate'), len, i = 0, args = args && slice.call(args, 1);
         var $closest;
         // 事件类型`type`对应的处理函数对象
         hs = hs && hs[type];
-
-        debugger
 
         for(var key in hs){
             $closest = $(eve.target).closest(key);
@@ -132,18 +132,7 @@ define(["core","var/slice"], function(light, slice){
                 break;
             }
         }
-
-        if(hs && (len = hs.length)){
-            for(; i<len; i++){
-                if(arguments.length === 2
-                    && $.isArray(args[0])){
-                    hs[i].apply(self, [eve].concat(args[0]))
-                }else{
-                    hs[i].apply(self, [eve].concat(args))
-                }
-            }
-        }
-
+        trigger(hs);
 
         // 2 trigger events bind on the current `element`
         if(eve.isPropagationStopped){
@@ -153,44 +142,27 @@ define(["core","var/slice"], function(light, slice){
         hs = hs && hs[type];
         //selector && (hs = hs[selector]);
 
-        if(hs && (len = hs.length)){
-            for(i = 0; i<len; i++){
-                if(arguments.length === 2
-                    && $.isArray(args[0])){
-                    hs[i].apply(self, [eve].concat(args[0]))
-                }else{
-                    hs[i].apply(self, [eve].concat(args))
+        trigger(hs);
+
+        args && self[type] && self[type]();
+
+        function trigger(hs){
+            var len, _args = args;
+            if(hs && (len = hs.length)){
+                for(i = 0; i<len; i++){
+                    if(args){
+                        if(args.length === 1
+                            && $.isArray(_args[0])){
+                            hs[i].apply(self, [eve].concat(_args[0]))
+                        }else{
+                            hs[i].apply(self, [eve].concat(_args))
+                        }
+                    }else{
+                        hs[i].apply(self, [eve])
+                    }
                 }
             }
         }
-
-
-        //var _dele = $(self).data('_delegate');
-        //var $closest, selector;
-        //_dele = _dele && _dele[type];
-        //for(var key in _dele){
-        //    $closest = $(eve.target).closest(key);
-        //    if($closest.length){
-        //        selector = key;
-        //        eve.currentTarget = $closest[0];
-        //        break;
-        //    }
-        //}
-
-        //var hs = $(self).data(selector ? '_delegate' : '_event'), len, i = 0, args = slice.call(arguments, 1);
-        //hs = hs && hs[type];
-        //selector && (hs = hs[selector]);
-        //eve = eve || {type: type};
-        //if(hs && (len = hs.length)){
-        //    for(; i<len; i++){
-        //        if(arguments.length === 2
-        //            && $.isArray(args[0])){
-        //            hs[i].apply(self, [eve].concat(args[0]))
-        //        }else{
-        //            hs[i].apply(self, [eve].concat(args))
-        //        }
-        //    }
-        //}
 
     }
 
@@ -208,22 +180,13 @@ define(["core","var/slice"], function(light, slice){
         };
         eve.preventDefault = function(){
             eve.isDefaultPrevented = true;
-            if(originEve.preventDefault){
+            if (originEve.preventDefault) {
                 originEve.preventDefault()
-            }else{
+            } else {
                 originEve.returnValue = false
             }
-        }
-        //if(!$.isFunction(eve.stopPropagation)){
-        //    eve.stopPropagation = function (){
-        //        eve.cancelBubble = true
-        //    }
-        //}
-        //if(!$.isFunction(eve.preventDefault)){
-        //    eve.preventDefault = function (){
-        //        eve.returnValue = false
-        //    }
-        //}
+        };
+
         eve.target = eve.target || eve.srcElement;
         eve.currentTarget = ele;
         return eve
