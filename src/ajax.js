@@ -8,13 +8,17 @@ define(["core"], function(light){
             if(!light.isString(url)){
                 config = url;
                 url = config.url
+            }else{
+                config = config || {};
+                config.url = url
             }
             if(!url){
                 return this
             }
+            config.data = config.data || {};
             var type = (config.type || 'GET').toUpperCase();
-            var data = config.data;
-            var params = getParams(data);
+            var data = light.extend(config.data, light.ajax.data);
+            var params = '';
             var xhr = new XMLHttpRequest();
             var handels = {
                 fail: [],
@@ -27,10 +31,6 @@ define(["core"], function(light){
             xhr.onreadystatechange = function (){
                 if(xhr.readyState === 4){
                     if(xhr.status >= 200 && xhr.status < 400){
-                        //var contentType = xhr.getResponseHeader('content-type');
-                        //var data = xhr.response;
-                        //data = contentType.match(/application\/json/) ? JSON.parse(data) : data;
-                        console.log("xhr", xhr)
                         fireHandel(handels, 'done', getData(xhr, config))
                     }else{
                         fireHandel(handels, 'fail', xhr)
@@ -41,16 +41,22 @@ define(["core"], function(light){
                 fireHandel(handels, 'fail')
             };
 
+            $(document).trigger('ajaxSend', config);
+            //window.aaa(config)
+
             try{
+
+                params = getParams(config.data);
                 if(type === 'GET'){
-                    url += (~url.indexOf('?') ? '&' : '?') + params;
+                    config.url += (~config.url.indexOf('?') ? '&' : '?') + params;
                     params = '';
                 }
-                xhr.open(type, url, true);
+                xhr.open(type, config.url, true);
                 //POST
                 type === 'POST' && xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
                 xhr.send(params);
             }catch(e){
+                console.log("e", e)
                 // 如果send()或者open()报错(比如跨域)，IE8 会捕获异常
                 fireHandel(handels, 'fail', xhr)
             }
@@ -62,9 +68,18 @@ define(["core"], function(light){
                     return this
                 }
             });
+            res.abort = function(){
+                xhr.abort();
+                return this
+            };
             return res
+        },
+        ajaxSetup: function (data){
+            light.extend(light.ajax.data, data || {})
         }
     });
+
+    light.ajax.data = {};
 
     light.each(["get", "post"], function(i,e){
         light[e] = function (url, data, fnDone, fnFail){
@@ -105,7 +120,14 @@ define(["core"], function(light){
     }
 
     function getParams(data){
-        return light.isString(data) ? data : "a=1&b=2&c=3"
+        //console.log("data:", data);
+        var str = [];
+        return light.isString(data) ? data : (function(){
+            light.each(data, function(k, v){
+                str.push(k + '=' + v)
+            });
+            return str.join('&')
+        })()
     }
 
     function getData(xhr, options){

@@ -16,14 +16,14 @@ define(["core"], function(light){
 
     var PN = 'parentNode', NS = 'nextSibling', PS = 'previousSibling';
     light.each({
-        "parent": {"key": PN,"count":1},
-        "parents": {"key": PN},
-        "parentsUntil": {"key": PN},
-        "next": {"key": NS, count: 1},
-        "nextAll": {"key": NS},
-        "prev": {"key": PS, count:1},
-        "prevAll": {"key": PS},
-        "closest": {"key": PN}
+        parent: {key: PN,"count":1},
+        parents: {key: PN},
+        parentsUntil: {key: PN},
+        next: {key: NS, count: 1},
+        nextAll: {key: NS},
+        prev: {key: PS, count:1},
+        prevAll: {key: PS},
+        closest: {key: PN, include: 1}
     }, function(key, val){
         light.fn[key] = function(selector, filter){
             var result = [];
@@ -32,12 +32,9 @@ define(["core"], function(light){
                 //todo selector可能为light对象
                 selector = filter
             }
-            if(key === 'closest'){
-                val.include = 1;
-                if(!selector){
-                    val.count = 1
-                }
-            }
+
+            key === 'closest' && !selector && (val.count = 1);
+
             this.each(function (){
                 result = result.concat(traver(this, val.key, val.until, val.include, val.count))
             });
@@ -60,7 +57,7 @@ define(["core"], function(light){
      * @returns {Array}
      */
     function traver(dom, type, until, include, count){
-        var result = [], until = until || document, cur = dom, c = 0;
+        var result = [], until = until || null, cur = dom, c = 0;
         count = count || Infinity;
         while((cur = cur[type]) && cur !== until){
             if(cur.nodeType === 1){
@@ -76,10 +73,10 @@ define(["core"], function(light){
     }
 
     light.fn.extend({
-        "siblings": function (){
+        siblings: function (){
             return this.parent().children()
         },
-        "is": function (selector){
+        is: function (selector){
             var res = false;
             if($.isLight(selector)){
                 res = true;
@@ -125,6 +122,9 @@ define(["core"], function(light){
             return self.filter(function(i, e){
                 return !match(e, selector)
             })
+        },
+        add: function(){
+
         },
         index: function (elem){
             var all, curr;

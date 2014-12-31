@@ -84,6 +84,9 @@ function(toString, slice, splice, rHtml, hasOwn){
         isWindow: function (obj){
             return obj && obj.window === obj
         },
+        isDocument: function(obj){
+            return 'getElementById' in obj
+        },
         isFunction: function (obj){
             return $type(obj) === 'function'
         },
@@ -111,13 +114,13 @@ function(toString, slice, splice, rHtml, hasOwn){
             var isArrayLike = this.isArrayLike(obj);
             if(isArrayLike){
                 for(var i = 0, len = obj.length; i<len; i++){
-                    if(func.call(obj[i], i, obj[i]) === false){
+                    if(func.call(obj[i], i, obj[i], obj) === false){
                         return
                     }
                 }
             }else{
                 for(var key in obj){
-                    if(func.call(obj[key], key, obj[key]) === false){
+                    if(func.call(obj[key], key, obj[key], obj) === false){
                         return
                     }
                 }
@@ -137,7 +140,7 @@ function(toString, slice, splice, rHtml, hasOwn){
             if(!selector){
                 return []
             }
-            var type = $type(selector), context = context || document;
+            var type = $typeOf(selector), context = context || document;
             if(type === 'string'){
                 if(rHtml.test(selector)){
                     // html片段
@@ -147,7 +150,7 @@ function(toString, slice, splice, rHtml, hasOwn){
                 }else{
                     return $.toArray(context.querySelectorAll(selector))
                 }
-            }else if(type === 'object' || type.match(/html(?:\w+)?element$/)){
+            }else if(type === 'object'/* || type.match(/html(?:\w+)?element$/)*/){
                 return $.isLight(selector) ? selector : [selector]
             }else{
                 return []
@@ -190,12 +193,6 @@ function(toString, slice, splice, rHtml, hasOwn){
             var script = document.createElement('script');
             script.text = code;
             document.head.appendChild(script).parentNode.removeChild(script)
-        },
-        omit: function (){
-
-        },
-        pick: function (){
-
         }
     });
 
@@ -204,11 +201,6 @@ function(toString, slice, splice, rHtml, hasOwn){
             //this.length = 0;
             this.selector = selector;
             this.context = context || document;
-            //var arr = $.makeArray(selector, this.context), len = arr.length;
-            //this.length = len;
-            //while(--len >= 0){
-            //    this[len] = arr[len]
-            //}
             var arr = $.makeArray(selector, this.context), len = arr.length;
             this.length = len;
             this.extend($.toArray(arr))
@@ -219,13 +211,11 @@ function(toString, slice, splice, rHtml, hasOwn){
          * @returns {light.fn}
          */
         each: function(fn){
-            //if($.isFunction(fn)){
-                for(var i = 0, len = this.length; i<len; i++) {
-                    if(fn.call(this[i], i, this[i]) === false){
-                        break
-                    }
+            for(var i = 0, len = this.length; i<len; i++) {
+                if(fn.call(this[i], i, this[i], this) === false){
+                    break
                 }
-            //}
+            }
             return this
         },
         map: function (fn){
@@ -276,6 +266,10 @@ function(toString, slice, splice, rHtml, hasOwn){
 
     function $type(obj){
         return toString.call(obj).replace(/^\[object (\w+)\]$/, '$1').toLowerCase()
+    }
+
+    function $typeOf(obj){
+        return typeof obj
     }
 
     function $isArray(obj) {

@@ -3,13 +3,13 @@
  * @author daiying.zhang
  */
 
-//TODO 删除offset返回的对象中其他的属性
 define(["core"], function(light){
+    var pf = parseFloat;
     light.fn.extend({
         offset: function (coordinates){
             if(coordinates){
-                var _left = parseInt(coordinates.left, 10),
-                    _top = parseInt(coordinates.top, 10);
+                var _left = pf(coordinates.left, 10),
+                    _top = pf(coordinates.top, 10);
                 return this.each(function (){
                     this.style.position = 'static';
                     var origin = getBound(this);
@@ -36,8 +36,8 @@ define(["core"], function(light){
 
             if(offset && offsetParent){
                 marginAndBorder = {
-                    left : parseFloat($this.css('marginLeft')) + parseFloat($parent.css('borderLeftWidth')),
-                    top: parseFloat($this.css('marginTop')) + parseFloat($parent.css('borderTopWidth'))
+                    left : pf($this.css('marginLeft')) + pf($parent.css('borderLeftWidth')),
+                    top: pf($this.css('marginTop')) + pf($parent.css('borderTopWidth'))
                 };
                 res = {
                     left: offset.left - offsetParent.left - marginAndBorder.left,
@@ -76,6 +76,19 @@ define(["core"], function(light){
     });
 
     function getBound(dom){
+        if(light.isWindow(dom)){
+            var html = dom.document.documentElement;
+            return {
+                left:0,
+                top:0,
+                right: html.clientWidth,
+                bottom: html.clientHeight
+            }
+        }
+
+        if(light.isDocument(dom)){
+            dom = document.documentElement
+        }
         return fixBound(dom ? $.extend({}, dom.getBoundingClientRect()) : null)
     }
 

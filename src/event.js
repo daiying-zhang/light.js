@@ -36,7 +36,6 @@ define(["core","var/slice"], function(light, slice){
                 len = types.length,
                 i = 0,
                 _delegate,
-                tmp,
                 _events = this.data('_event');
 
             !_events && this.data('_event',_events = {});
@@ -49,19 +48,7 @@ define(["core","var/slice"], function(light, slice){
                     hs = _events[type] = [];
                     this.each(function(i, ele){
                         addEventListener(ele, type, function(eve){
-                            //console.log("typeof eve", typeof eve)
-                            var $closest, eve = fixEvent(eve, ele);
-                            //if(selector){
-                            //    $closest = $(eve.target).closest(selector);
-                            //    if($closest.length){
-                            //        eve.currentTarget = $closest[0];
-                            //        //console.log("eve.currentTarget = ", eve.currentTarget)
-                            //        triggerHandel(ele, type, eve, selector)
-                            //    }
-                            //}else{
-                            //    triggerHandel(ele, type, eve)
-                            //}
-                            triggerHandel(null, ele, type, eve)
+                            triggerHandel(null, ele, type, fixEvent(eve, ele))
                         });
                         //ele = null
                     })
@@ -105,12 +92,7 @@ define(["core","var/slice"], function(light, slice){
         trigger : function(type){
             var args = arguments;
             return this.each(function(){
-                //if($.isFunction(this[type])){
-                    //todo 这里有问题
-                //    this[type]()
-                //}else{
-                    triggerHandel(args, this, type, {type: type, timeStamp: +new Date, isTrigger: true});
-                //}
+                triggerHandel(args, this, type, {type: type, timeStamp: +new Date, isTrigger: true});
             })
         }
     });
@@ -119,7 +101,7 @@ define(["core","var/slice"], function(light, slice){
         if(!type){return}
 
         // 1 trigger delegated events
-        var hs = $(self).data('_delegate'), len, i = 0, args = args && slice.call(args, 1);
+        var hs = $(self).data('_delegate'), i = 0, args = args && slice.call(args, 1);
         var $closest;
         // 事件类型`type`对应的处理函数对象
         hs = hs && hs[type];
@@ -147,19 +129,15 @@ define(["core","var/slice"], function(light, slice){
         args && self[type] && self[type]();
 
         function trigger(hs){
-            var len, _args = args;
+            var len, _args;
             if(hs && (len = hs.length)){
+                if(args){
+                    _args = [eve].concat(args.length === 1 ? args[0] : args)
+                }else{
+                    _args = [eve]
+                }
                 for(i = 0; i<len; i++){
-                    if(args){
-                        if(args.length === 1
-                            && $.isArray(_args[0])){
-                            hs[i].apply(self, [eve].concat(_args[0]))
-                        }else{
-                            hs[i].apply(self, [eve].concat(_args))
-                        }
-                    }else{
-                        hs[i].apply(self, [eve])
-                    }
+                    hs[i].apply(self, _args)
                 }
             }
         }
@@ -186,6 +164,14 @@ define(["core","var/slice"], function(light, slice){
                 originEve.returnValue = false
             }
         };
+        eve.stopImmediatePropagation = function (){
+            eve.isImmediatePropagationStopped = true;
+            if(originEve.stopImmediatePropagation){
+                originEve.stopImmediatePropagation()
+            }else{
+                //eve.stopPropagation();
+            }
+        }
 
         eve.target = eve.target || eve.srcElement;
         eve.currentTarget = ele;

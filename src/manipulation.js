@@ -29,49 +29,67 @@ define(["core"], function(light){
                 this.parentNode.removeChild(this)
             })
         },
-        append: function (elem){
-            light.isString(elem) && (elem = light(elem));
-            return this.each(function(i,e){
-                if(light.isLight(elem)){
-                    elem.each(function (){
-                        e.appendChild(this)
-                    })
-                }else{
-                    e.appendChild(elem)
-                }
-            })
-        },
-        appendTo: function (selector){
-            var target = $(selector), len = target.length;
-            return this.each(function(i,e){
-                target.each(function (j, el){
-                    el.appendChild(len > 1 && j > 0 ? e.cloneNode(true) : e)
-                })
-            })
-        },
-        prepend: function (elem){
-            //todo 重构代码  & 修复bug，elem，可能为数组
-            light.isString(elem) && (elem = light(elem));
-            return this.each(function(i,e){
-                if(light.isLight(elem)){
-                    elem.each(function (){
-                        e.insertBefore(this, e.firstChild)
-                    })
-                }else{
-                    e.insertBefore(elem, e.firstChild)
-                }
-            })
-        },
-        prependTo: function (selector){
-            var target = $(selector), len = target.length;
-            return this.each(function(i,e){
-                target.each(function (j, el){
-                    el.insertBefore(len > 1 && j > 0 ? e.cloneNode(true) : e, el.firstChild)
-                })
-            })
-        },
+        //appendTo: function (selector){
+        //    var target = $(selector), len = target.length;
+        //    return this.each(function(i,e){
+        //        target.each(function (j, el){
+        //            el.appendChild(len > 1 && j > 0 ? e.cloneNode(true) : e)
+        //        })
+        //    })
+        //},
+        //prependTo: function (selector){
+        //    var target = $(selector), len = target.length;
+        //    return this.each(function(i,e){
+        //        target.each(function (j, el){
+        //            el.insertBefore(len > 1 && j > 0 ? e.cloneNode(true) : e, el.firstChild)
+        //        })
+        //    })
+        //},
         wrap: function (){
 
+        },
+        clone: function(){
+
+        }
+    });
+
+    light.each({append:'appendChild', prepend:'insertBefore', appendTo:0, prependTo: 0}, function(k,v,o){
+        light.fn[k] = function(elem){
+            //debugger
+            //var isLight, _this = this;
+            //!v && (_this = elem, elem = this, v = o[k.replace(/To$/,'')]);
+            //isLight = light.isLight(elem);
+            //light.isString(elem) && (elem = light(elem), isLight = true);
+            //return _this.each(function(i, e){
+            //    if(isLight){
+            //        elem.each(function (){
+            //            e[v](this, e.firstChild)
+            //        })
+            //    }else{
+            //        e[v](elem, e.firstChild)
+            //    }
+            //})
+            var isLight, _this = this, isTo = !v, method = v;
+            //!v && (_this = elem, elem = this, v = o[k.replace(/To$/,'')]);
+            isLight = light.isLight(elem);
+
+            isTo && (method = o[k.replace(/To$/,'')]);
+            light.isString(elem) && (elem = light(elem), isLight = true);
+            return _this.each(function(i, e){
+
+                if(isLight){
+                    elem.each(function (){
+                        isTo
+                            ? this[method](e, this.firstChild)
+                            : e[method](this, e.firstChild)
+                    })
+                }else{
+                    isTo
+                        ? this[method](e, this.firstChild)
+                        : e[method](elem, e.firstChild)
+                    //e[v](elem, e.firstChild)
+                }
+            })
         }
     })
 });
