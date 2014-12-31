@@ -125,28 +125,36 @@ require(["../src/light"], function(light){
     })
 
 
-//    $.ajaxSetup({
-//        domain: 'www.zdying.com'
-//    });
-//
-//    $(document).on('ajaxSend', function (eve, config){
-//        config.data.aaaaaa = '0123456889';
-//        config.data.bbbbbb = '9876543210'
-//    });
-//
-//    var xhr = $.ajax('http://zdying.com/api/snippet.html', {
-//    //var xhr = $.ajax('http://zdying.com/api/weather', {
-//    //var xhr = $.ajax('http://zdying.com/api/test.js', {
-//        type: "POST",
-//        data: {
-//            name: 'z',
-//            age:2
-//        },
-//        dataType: 'html',
-//        success: function(json){
-//            console.log("option.success: json = ", json)
-//        }
-//    });
+    $.ajaxSetup({
+        domain: 'www.zdying.com'
+    });
+
+    $(document).on('ajaxSend', function (eve, config){
+        config.data.aaaaaa = '0123456889';
+        config.data.bbbbbb = '9876543210'
+    });
+
+    var xhr = $.ajax({
+    //var xhr = $.ajax('http://zdying.com/api/weather', {
+    //var xhr = $.ajax('http://zdying.com/api/test.js', {
+        url: 'http://zdying.com/api/weather',
+        type: "POST",
+        data: {
+            name: 'z',
+            age:2
+        },
+        dataType: 'html',
+        success: function(json){
+            console.log("option.success: json = ", json)
+        },
+        always: function (json){
+            console.log("option.always: json = ", json)
+        }
+    });
+
+    xhr.complete(function(json){
+        console.log("xhr.complete: json = ", json)
+    });
 
 //    var xhr = $.post('http://zdying.com/api/weather', "name=223&fjfjf=3434", function(json){
 //        console.log("option.success: json = ", json)
