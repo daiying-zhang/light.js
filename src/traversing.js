@@ -25,12 +25,10 @@ define(["core"], function(light){
         prevAll: {key: PS},
         closest: {key: PN, include: 1}
     }, function(key, val){
-        light.fn[key] = function(selector, filter){
+        light.fn[key] = function(selector){
             var result = [];
             if(key.match(/Until$/)){
                 val.until = selector;
-                //todo selector可能为light对象
-                selector = filter
             }
 
             key === 'closest' && !selector && (val.count = 1);

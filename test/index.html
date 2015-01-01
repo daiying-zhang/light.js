@@ -50,10 +50,11 @@
         <input type="radio" id="sex2" name="sex" value="2"/> 女
     </form>
 </main>
-<script data-main="main" id="scr" src="require.js"></script>
+<!--<script data-main="main" id="scr" src="require.js"></script>-->
+<script src="../light.min.js"></script>
 <!--<script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>-->
 <script>
-require(["../src/light"], function(light){
+//require(["../src/light"], function(light){
     var start = +new Date;
     //var $test = $('#test');
     var $list = $('.list');
@@ -121,19 +122,32 @@ require(["../src/light"], function(light){
 //        console.log("span.cls is clicked...")
 //        e.stopPropagation()
 //    });
+    $('body').on('click', function(){
+        console.warn('body clicked')
+    });
 
-    $('#a').on('click', function(e){
-        console.log("preventDefault - 0");
-        //e.preventDefault()
+
+    $('body').click('#a', function (){
+        console.warn('this is a event handel from $("body").click("#a", fn)');
         return false
-    })
+    });
+    $('#a').click(function (eve){
+        console.warn('this is a event handel from $("#a").click(fn)');
+        eve.preventDefault()
+    });
 
 //    $('#a').on('click', function(e){
-//        console.log("preventDefault - 1");
+//        console.log("preventDefault - 0");
 //        e.preventDefault()
 //        //return false
 //    })
 //
+//    $('#a').on('click', function(e){
+//        console.log("preventDefault - 1");
+//        e.preventDefault()
+//        //return false
+//    });
+
 //    $('#a').on('click', function(e){
 //        console.log("preventDefault - 2");
 //        e.preventDefault()
@@ -142,7 +156,8 @@ require(["../src/light"], function(light){
 //
 //    $('#a').one('click', function(e){
 //        console.log("preventDefault - one");
-//        e.preventDefault()
+//        e.preventDefault();
+//        e.stopImmediatePropagation();
 //        //return false
 //    })
 //
@@ -159,7 +174,7 @@ require(["../src/light"], function(light){
         return false
     }).on('click', function(eve){
         console.log("#aa clicked")
-    })
+    });
 
 
 //    $.ajaxSetup({
@@ -213,7 +228,7 @@ require(["../src/light"], function(light){
 //            //$('body').append(args)
 //        })
 //    }, 2000)
-})
+//})
 </script>
 </body>
 </html>

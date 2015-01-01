@@ -12,7 +12,7 @@ define([
     "attr",
     "offset",
     "ajax"
-], function(light){
+], function(core){
 
-    return window.light = window.$ = light
+    return window.light = window.$ = core
 });

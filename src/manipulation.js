@@ -22,7 +22,7 @@ define(["core"], function(light){
         text: function (text){
             //IE8 support
             var propName = "textContent" in this ? "textContent" : "innerText";
-            return text ? this.each(function(){
+            return arguments.length ? this.each(function(){
                 this[propName] = text
             }) : this[0] ? this[0].textContent || this[0].innerHTML.replace(/<[^>]+>/g, "") : ""
         },

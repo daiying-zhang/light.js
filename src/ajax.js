@@ -15,7 +15,6 @@ define(["core"], function(light){
                 config.url = url
             }
             if(!url || !config){
-                console.log("error.....")
                 return this
             }
             config.data = config.data || {};

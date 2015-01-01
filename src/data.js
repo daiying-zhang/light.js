@@ -55,6 +55,7 @@ define(["core"], function(light){
     function getDateset(dom){
         var data = getCacheObj(dom);
         var dataset = dom.dataset;
+        //todo ie8 dataset
         return $.extend(true, data, dataset)
     }
 

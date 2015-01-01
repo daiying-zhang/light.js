@@ -12,47 +12,27 @@ define(["core"], function(light){
             }
 
             // set
-            //function setStyle(dom, key, val){
-            //    var style = dom.style;
-            //    if(key.indexOf('-') !== -1 && style.setProperty){
-            //        style.setProperty(key, val, '')
-            //    }else{
-            //        style[key] = val
-            //    }
-            //}
             return this.each(function(){
                 if(type === 'string'){
                     // FireFox does not support proper name like `font-size`
                     // Should use `fontSize` or use `HTMLElement.style.setProperty()`
                     this.style[key.camelize()] = val;
-                    //setStyle(this, key, val)
                 }else if(type === 'object'){
                     for(var _key in key){
                         this.style[_key.camelize()] = key[_key];
-                        //setStyle(this, _key, key[_key])
                     }
                 }
             })
         },
-        hide: function (){
-            return this.each(function (){
-                this.style.display = "none"
-            })
-        },
-        show: function (){
-            return this.each(function(){
-                this.style.display = ""
-            })
-        },
         toggle: function (isShow){
             return this.each(function(){
-                var style = this.style;
+                var style = this.style, none = 'none';
                 if(isShow){
                     style.display = ""
                 }else if(isShow === false){
-                    style.display = "none"
+                    style.display = none
                 }else{
-                    style.display = style.display === "none" ? "" : "none"
+                    style.display = style.display === none ? "" : none
                 }
             })
         },
@@ -68,6 +48,14 @@ define(["core"], function(light){
                  classList[e](cls)
              })
          }
+    });
+
+    light.each({hide:'none', show:''}, function(k,v){
+        light.fn[k] = function(){
+            return this.each(function(){
+                this.style.display = v
+            })
+        }
     });
 
     function getClassList(elem){

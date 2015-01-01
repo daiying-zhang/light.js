@@ -35,10 +35,11 @@ define(["core","var/slice"], function(light, slice){
                 types = type.split(/\s+/),
                 len = types.length,
                 i = 0,
+                self = this,
                 _delegate,
-                _events = this.data('_event');
+                _events = self.data('_event');
 
-            !_events && this.data('_event',_events = {});
+            !_events && self.data('_event',_events = {});
 
             for(; i<len; i++){
                 hs = _events[type = types[i]];
@@ -46,7 +47,7 @@ define(["core","var/slice"], function(light, slice){
                 // 没有注册过type事件
                 if(!hs){
                     hs = _events[type] = [];
-                    this.each(function(i, ele){
+                    self.each(function(i, ele){
                         addEventListener(ele, type, function(eve){
                             triggerHandel(null, ele, type, fixEvent(eve, ele))
                         });
@@ -55,14 +56,14 @@ define(["core","var/slice"], function(light, slice){
                 }
 
                 if(selector){
-                    _delegate = this.data('_delegate');
-                    !_delegate && this.data('_delegate',_delegate = {});
+                    _delegate = self.data('_delegate');
+                    !_delegate && self.data('_delegate',_delegate = {});
                     hs = _delegate[type] || (_delegate[type] = {});
                     hs = hs[selector] = hs[selector] || [];
                 }
                 hs.push(handel)
             }
-            return this
+            return self
         },
         /**
          * remove event handel
@@ -70,10 +71,10 @@ define(["core","var/slice"], function(light, slice){
          * @param handel
          */
         off: function(type, handel) {
-            var hs = this.data('_event'), index;
+            var self = this, hs = self.data('_event'), index;
             if(arguments.length === 0){
-                this.data('_event', {});
-                this.data('_delegete', {});
+                self.data('_event', {});
+                self.data('_delegete', {});
             }else{
                 hs = hs && hs[type];
                 if(hs){
@@ -86,7 +87,7 @@ define(["core","var/slice"], function(light, slice){
                 }
             }
 
-            return this
+            return self
         },
         one: function (type, selector, handel){
             var args = arguments;
@@ -108,6 +109,12 @@ define(["core","var/slice"], function(light, slice){
             return this.each(function(){
                 triggerHandel(args, this, type, {type: type, timeStamp: +new Date, isTrigger: true});
             })
+        }
+    });
+
+    light.each('mousedown mouseup click dblclick keyup keydown keypress blur focus change'.split(' '), function(i,e){
+        light.fn[e] = function(selector, fn){
+            light.isFunction(selector) ? this.on(e, selector) : this.on(e, selector, fn)
         }
     });
 
@@ -143,14 +150,17 @@ define(["core","var/slice"], function(light, slice){
         args && self[type] && self[type]();
 
         function trigger(hs){
-            var len, _args;
-            if(hs && (len = hs.length)){
+            var _args;
+            if(hs && hs.length){
                 if(args){
                     _args = [eve].concat(args.length === 1 ? args[0] : args)
                 }else{
                     _args = [eve]
                 }
                 for(i = 0; i<hs.length; i++){
+                    if(eve.isImmediatePropagationStopped){
+                        break
+                    }
                     if(hs[i].apply(self, _args) === false){
                         eve.stopPropagation();
                         eve.preventDefault();
@@ -190,9 +200,9 @@ define(["core","var/slice"], function(light, slice){
             if(originEve.stopImmediatePropagation){
                 originEve.stopImmediatePropagation()
             }else{
-                //eve.stopPropagation();
+                eve.stopPropagation();
             }
-        }
+        };
 
         eve.target = eve.target || eve.srcElement;
         eve.currentTarget = ele;
