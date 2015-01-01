@@ -102,9 +102,20 @@ require(["../src/light"], function(light){
     });
 
     $('li').on('click','.cls', function(eve){
-        $(eve.currentTarget).css('backgroundColor', 'red');
+        $(eve.currentTarget).css('backgroundColor', ["red", 'green', 'blue', 'orange', 'lightgray'][Math.floor(Math.random() * 5)]);
         eve.stopPropagation()
     });
+
+    $('li').one('click', '.cls', function(eve){
+        console.warn('can you see it how many times?')
+    });
+
+    $('li').on('mousedown', function(eve){
+        eve.preventDefault()
+    });
+
+    //$('li').off('click');
+    //$('li').off();
 
 //    $('span.cls').on('click', function(e){
 //        console.log("span.cls is clicked...")
@@ -112,49 +123,75 @@ require(["../src/light"], function(light){
 //    });
 
     $('#a').on('click', function(e){
-        console.log("preventDefault");
-        e.preventDefault()
+        console.log("preventDefault - 0");
+        //e.preventDefault()
+        return false
     })
 
+//    $('#a').on('click', function(e){
+//        console.log("preventDefault - 1");
+//        e.preventDefault()
+//        //return false
+//    })
+//
+//    $('#a').on('click', function(e){
+//        console.log("preventDefault - 2");
+//        e.preventDefault()
+//        //return false
+//    })
+//
+//    $('#a').one('click', function(e){
+//        console.log("preventDefault - one");
+//        e.preventDefault()
+//        //return false
+//    })
+//
+//    $('#a').on('click', function(e){
+//        console.log("preventDefault - 3");
+//        e.preventDefault()
+//        //return false
+//    })
+//
     $('#aa').on('click', '.c', function (eve){
         console.log("click", eve.target, eve.currentTarget);
         console.log(".c clicked")
-        eve.stopPropagation()
+        //eve.stopPropagation()
+        return false
     }).on('click', function(eve){
         console.log("#aa clicked")
     })
 
 
-    $.ajaxSetup({
-        domain: 'www.zdying.com'
-    });
+//    $.ajaxSetup({
+//        domain: 'www.zdying.com'
+//    });
+//
+//    $(document).on('ajaxSend', function (eve, config){
+//        config.data.aaaaaa = '0123456889';
+//        config.data.bbbbbb = '9876543210'
+//    });
 
-    $(document).on('ajaxSend', function (eve, config){
-        config.data.aaaaaa = '0123456889';
-        config.data.bbbbbb = '9876543210'
-    });
-
-    var xhr = $.ajax({
-    //var xhr = $.ajax('http://zdying.com/api/weather', {
-    //var xhr = $.ajax('http://zdying.com/api/test.js', {
-        url: 'http://zdying.com/api/weather',
-        type: "POST",
-        data: {
-            name: 'z',
-            age:2
-        },
-        dataType: 'html',
-        success: function(json){
-            console.log("option.success: json = ", json)
-        },
-        always: function (json){
-            console.log("option.always: json = ", json)
-        }
-    });
-
-    xhr.complete(function(json){
-        console.log("xhr.complete: json = ", json)
-    });
+//    var xhr = $.ajax({
+//    //var xhr = $.ajax('http://zdying.com/api/weather', {
+//    //var xhr = $.ajax('http://zdying.com/api/test.js', {
+//        url: 'http://zdying.com/api/weather',
+//        type: "POST",
+//        data: {
+//            name: 'z',
+//            age:2
+//        },
+//        dataType: 'html',
+//        success: function(json){
+//            console.log("option.success: json = ", json)
+//        },
+//        always: function (json){
+//            console.log("option.always: json = ", json)
+//        }
+//    });
+//
+//    xhr.complete(function(json){
+//        console.log("xhr.complete: json = ", json)
+//    });
 
 //    var xhr = $.post('http://zdying.com/api/weather', "name=223&fjfjf=3434", function(json){
 //        console.log("option.success: json = ", json)

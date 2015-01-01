@@ -71,16 +71,30 @@ define(["core","var/slice"], function(light, slice){
          */
         off: function(type, handel) {
             var hs = this.data('_event'), index;
-            hs = hs && hs[type];
-            if(hs){
-                if(!$.isFunction(handel)){
-                    hs.length = 0
-                }else{
-                    index = hs.indexOf(handel);
-                    index !== -1 && hs.splice(index, 1)
+            if(arguments.length === 0){
+                this.data('_event', {});
+                this.data('_delegete', {});
+            }else{
+                hs = hs && hs[type];
+                if(hs){
+                    if(!$.isFunction(handel)){
+                        hs.length = 0
+                    }else{
+                        index = hs.indexOf(handel);
+                        index !== -1 && hs.splice(index, 1)
+                    }
                 }
             }
+
             return this
+        },
+        one: function (type, selector, handel){
+            var args = arguments;
+            if(light.isFunction(selector)){
+                args = [type, handel = selector]
+            }
+            handel.__isOne = true;
+            this.on.apply(this, args)
         },
         /**
          * trigger event
@@ -136,8 +150,15 @@ define(["core","var/slice"], function(light, slice){
                 }else{
                     _args = [eve]
                 }
-                for(i = 0; i<len; i++){
-                    hs[i].apply(self, _args)
+                for(i = 0; i<hs.length; i++){
+                    if(hs[i].apply(self, _args) === false){
+                        eve.stopPropagation();
+                        eve.preventDefault();
+                    }
+                    // 如果是用`.one()`绑定的方法，执行后立即删除
+                    if(hs[i].__isOne === true){
+                        hs.splice(i--, 1);
+                    }
                 }
             }
         }
