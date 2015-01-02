@@ -7,8 +7,8 @@ define(["core","var/slice"], function(light, slice){
         ? function (dom, typeName, fn){
             dom.addEventListener(typeName, fn, false)
         }
-        : function (dom, typeNaem, fn){
-            dom.attachEvent('on' + typeNaem, function(){
+        : function (dom, typeName, fn){
+            dom.attachEvent('on' + typeName, function(){
                 fn.call(dom, window.event)
             })
         };
@@ -76,8 +76,7 @@ define(["core","var/slice"], function(light, slice){
                 self.data('_event', {});
                 self.data('_delegete', {});
             }else{
-                hs = hs && hs[type];
-                if(hs){
+                if(hs = hs && hs[type]){
                     if(!$.isFunction(handel)){
                         hs.length = 0
                     }else{

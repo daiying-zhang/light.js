@@ -54,7 +54,16 @@ define(["core"], function(light){
 
     function getDateset(dom){
         var data = getCacheObj(dom);
-        var dataset = dom.dataset;
+        var dataset = dom.dataset, attributes, i = 0, len, tmp;
+        if(dataset === undefined){
+            dataset = {};
+            attributes = dom.attributes;
+            for(len = attributes.length; i<len; i++){
+                if(tmp = attributes[i].name.match(/^data\-(.+)$/)){
+                    dataset[tmp[1].camelize()] = attributes[i].value
+                }
+            }
+        }
         //todo ie8 dataset
         return $.extend(true, data, dataset)
     }

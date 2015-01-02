@@ -6,14 +6,15 @@
     <style>
         html{height: 100%;}
         body{ whidth: 100%; height: 100%;background: url(./bg.jpg) no-repeat; background-size: cover; font-family: "Consolas", "Courier New", "Courier"}
-        .m-typed{ background: #2A1C11; background: rgba(0,0,0,.7); width: 600px; margin: 0 auto; margin-top: 100px; border-radius: 5px; overflow: hidden }
+        .m-typed{ opacity:0; background: #2A1C11; background: rgba(0,0,0,.7); position: absolute; width: 600px; min-height: 100px; border-radius: 5px; overflow: hidden }
         .m-typed .title{
             background: white;
             background-image: -webkit-linear-gradient(top, #e8e8e8, #bcbbbc);
             background-image: -moz-linear-gradient(top, #e8e8e8, #bcbbbc);
             background-image: linear-gradient(top, #e8e8e8, #bcbbbc);
-            padding: 4px 10px; text-align: center}
+            padding: 4px 10px; text-align: center; cursor: move; }
         .m-typed .content{ padding: 10px; color: white; font-size: 24px; min-height: 200px; -webkit-transition: all 1s linear; }
+        .m-typed .typed-area{ white-space: pre-line; }
         .m-typed .cursor{
             -webkit-animation: blink 0.7s infinite;
             -moz-animation: blink 0.7s infinite;
@@ -50,17 +51,21 @@
     </style>
 </head>
 <body>
-<div class="m-typed">
+<div class="m-typed" id="m-typed">
     <div class="title">Hello light.js</div>
     <div class="content">
-        $ <span class="js-typed"></span><span class="cursor">|</span>
+        $ <span class="js-typed typed-area"></span><span class="cursor">|</span>
     </div>
 </div>
     <script src="../light.min.js"></script>
     <!--<script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>-->
     <script>
         ;(function($){
-            $.fn.typed = function(texts){
+            $.fn.typed = function(texts, options){
+                options = $.extend({
+                    typeSpeed: 80,
+                    delSpeed: 40
+                }, options);
                 return this.each(function(){
                     type(texts, $(this))
                 });
@@ -77,7 +82,7 @@
                                     del($dom, texts)
                                 }, 500)
                             }
-                        }, 100)
+                        }, options.typeSpeed)
                     }
                 }
                 function del($dom, texts){
@@ -92,14 +97,45 @@
                                 }, 500)
                             }
                         }
-                    }, 40)
+                    }, options.delSpeed)
                 }
             };
+
+            $.fn.drag = function(){
+                var startX, startY, left, top, curr;
+                this.on('mousedown', function(eve){
+                    startX = eve.pageX;
+                    startY = eve.pageY;
+                    curr = $(eve.currentTarget).parent();
+                    left = parseFloat(curr.css('left'));
+                    top = parseFloat(curr.css('top'));
+                    eve.preventDefault();
+                });
+
+                $(document).on('mousemove', function(eve){
+                    curr && curr.css({
+                        'left': (left + eve.pageX - startX) + 'px',
+                        'top': (top + eve.pageY - startY) + 'px',
+                        'marginLeft' : '0',
+                        'marginTop': '0'
+                    })
+                }).on('mouseup', function(){
+                    curr = null
+                });
+                return this
+            }
         })(window.light);
     </script>
 
     <script>
-        $('.js-typed').typed(["Hello", '"light.js" is a light weight JavaScript library like jQuery.', 'It help you script width dom.', 'It\'s light weight.', 'Try it now!'])
+        var $doc = $(document), $typed = $('#m-typed'),
+            css = {
+                left: ($doc.width() - $typed.width()) / 2 + 'px',
+                top: ($doc.height() - $typed.height()) / 2 + 'px',
+                opacity: 1
+            };
+        $typed.css(css).find('.title').drag();
+        $('.js-typed').typed(["Hello.", '"light.js" is a light weight JavaScript library like jQuery.', 'It help you script with dom.', 'It\'s light weight.', 'Try it now!'])
     </script>
 </body>
 </html>

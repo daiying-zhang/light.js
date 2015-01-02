@@ -75,7 +75,13 @@ define(["core"], function(light){
         }
     });
 
+    /*
+     * 获取bound
+     * @param dom
+     * @returns {*}
+     */
     function getBound(dom){
+        // 如果是window，则获取`html`的位置和尺寸
         if(light.isWindow(dom)){
             var html = dom.document.documentElement;
             return {
@@ -92,6 +98,10 @@ define(["core"], function(light){
         return fixBound(dom ? $.extend({}, dom.getBoundingClientRect()) : null)
     }
 
+    /*
+     * 修正bound对象，`element.getBoundingClientRect()`相对于窗口
+     * 实际期望相对于文档
+     */
     function fixBound(bound){
         var x, y, body = document.body, html = document.documentElement;
         if(bound){

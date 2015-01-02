@@ -70,9 +70,6 @@ function(toString, slice, splice, rHtml, hasOwn){
     $.extend({
         type: $type,
         isArray: $isArray,
-        isFunction: function(obj) {
-            return this.type(obj) === 'function'
-        },
         isString: $isString,
         isUndefined: function (obj){
             return obj === undefined
@@ -93,15 +90,12 @@ function(toString, slice, splice, rHtml, hasOwn){
         isArrayLike: function (obj){
             var length = obj.length,
                 type = light.type( obj );
-
             if ( type === "function" || light.isWindow( obj ) ) {
                 return false;
             }
-
             if ( obj.nodeType === 1 && length ) {
                 return true;
             }
-
             return type === "array" || length === 0 ||
                 typeof length === "number" && length > 0 && ( length - 1 ) in obj;
         },
@@ -161,6 +155,7 @@ function(toString, slice, splice, rHtml, hasOwn){
             try{
                 result = slice.call(obj)
             }catch(e){
+                // Support IE8
                 var i = 0, len = obj.length;
                 if($.isNumber(len)){
                     for(;i<len;i++){
@@ -172,7 +167,7 @@ function(toString, slice, splice, rHtml, hasOwn){
         },
         unique: function (obj){
             var tmp = [], index;
-            for(var i= 0; i<obj.length; i++){
+            for(var i= 0, len = obj.length;i<len; i++){
                 if(~(index = tmp.indexOf(obj[i]))){
                     splice.call(obj, index, 1);
                     i--
