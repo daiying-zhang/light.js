@@ -5,7 +5,7 @@
     <title>light.js plugin demo</title>
     <style>
         html{height: 100%;}
-        body{ whidth: 100%; height: 100%;background: url(./bg.jpg) no-repeat; background-size: cover; font-family: "Consolas", "Courier New", "Courier"}
+        body{ whidth: 100%; height: 100%; margin:0; background: url(./bg.jpg) no-repeat; background-size: cover; font-family: "Consolas", "Courier New", "Courier"}
         .m-typed{ opacity:0; background: #2A1C11; background: rgba(0,0,0,.7); position: absolute; width: 600px; min-height: 100px; border-radius: 4px; overflow: hidden }
         .m-typed .title{
             background: white;
@@ -22,6 +22,11 @@
             -o-animation: blink 0.7s infinite;
             animation: blink 0.7s infinite;
         }
+        .m-typed .btns{ position: absolute; top: 7px; width: 52px; left: 6px; font-size: 12px; }
+        .m-typed .btn{ width: 10px; height: 10px; border-radius: 50%; background: #FF2851; display: inline-block }
+        .m-typed .btn.close{ border: 1px solid #FF3824}
+        .m-typed .btn.min{ border: 1px solid #FF9600; background: #FFCD00}
+        .m-typed .btn.max{ border: 1px solid #00B720; background: #00F345}
 
         @keyframes blink {
             0% { opacity: 0; }
@@ -53,6 +58,11 @@
 <body>
 <div class="m-typed" id="m-typed">
     <div class="title">Hello light.js</div>
+    <div class="btns">
+        <div class="btn close"></div>
+        <div class="btn min"></div>
+        <div class="btn max"></div>
+    </div>
     <div class="content">
         $ <span class="js-typed typed-area"></span><span class="cursor">|</span>
     </div>
@@ -101,17 +111,16 @@
                 }
             };
 
-            $.fn.drag = function(){
+            $.fn.drag = function(options){
                 var startX, startY, left, top, curr;
 
                 $(document).on('mousemove', function(eve){
                     curr && curr.css({
                         'left': (left + eve.pageX - startX) + 'px',
-                        'top': (top + eve.pageY - startY) + 'px',
-                        'marginLeft' : '0',
-                        'marginTop': '0'
-                    })
+                        'top': (top + eve.pageY - startY) + 'px'
+                    }).trigger('draging', curr.position())
                 }).on('mouseup', function(){
+                    curr && curr.trigger('dragover', curr.position());
                     curr = null
                 });
                 return this.on('mousedown', function(eve){
@@ -120,6 +129,7 @@
                     curr = $(eve.currentTarget).parent();
                     left = parseFloat(curr.css('left'));
                     top = parseFloat(curr.css('top'));
+                    curr.trigger('dragstart', curr.position());
                     eve.preventDefault();
                 });
             }
@@ -133,7 +143,9 @@
                 top: ($doc.height() - $typed.height()) / 2 + 'px',
                 opacity: 1
             };
-        $typed.css(css).find('.title').drag();
+        $typed.css(css).find('.title').drag().parent().on('draging', function(eve, pos){
+            console.log("dragOver ==> ", pos.left, pos.top)
+        });
         $('.js-typed').typed(["Hello.", '"light.js" is a light weight JavaScript library like jQuery.', 'It help you script with dom.', 'It\'s light weight.', 'Try it now!'])
     </script>
 </body>
