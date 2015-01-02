@@ -6,13 +6,21 @@
     <style>
         html{height: 100%;}
         body{ whidth: 100%; height: 100%;background: url(./bg.jpg) no-repeat; background-size: cover; font-family: "Consolas", "Courier New", "Courier"}
-        .m-typed{ background: rgba(0,0,0,.7); width: 600px; margin: 0 auto; margin-top: 100px; border-radius: 5px; overflow: hidden }
-        .m-typed .title{ background-image: -webkit-linear-gradient(top, #e8e8e8, #bcbbbc);
+        .m-typed{ background: #2A1C11; background: rgba(0,0,0,.7); width: 600px; margin: 0 auto; margin-top: 100px; border-radius: 5px; overflow: hidden }
+        .m-typed .title{
+            background: white;
+            background-image: -webkit-linear-gradient(top, #e8e8e8, #bcbbbc);
             background-image: -moz-linear-gradient(top, #e8e8e8, #bcbbbc);
             background-image: linear-gradient(top, #e8e8e8, #bcbbbc);
             padding: 4px 10px; text-align: center}
         .m-typed .content{ padding: 10px; color: white; font-size: 24px; min-height: 200px; -webkit-transition: all 1s linear; }
-        .m-typed .cursor{ -webkit-animation: blink 0.7s infinite}
+        .m-typed .cursor{
+            -webkit-animation: blink 0.7s infinite;
+            -moz-animation: blink 0.7s infinite;
+            -ms-animation: blink 0.7s infinite;
+            -o-animation: blink 0.7s infinite;
+            animation: blink 0.7s infinite;
+        }
 
         @keyframes blink {
             0% { opacity: 0; }
@@ -20,6 +28,21 @@
             100% { opacity: 0; }
         }
         @-webkit-keyframes blink {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        @-moz-keyframes blink {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        @-ms-keyframes blink {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        @-o-keyframes blink {
             0% { opacity: 0; }
             50% { opacity: 1; }
             100% { opacity: 0; }
