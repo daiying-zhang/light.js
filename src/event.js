@@ -43,7 +43,7 @@ define(["core","var/slice"], function(light, slice){
 
             for(; i<len; i++){
                 hs = _events[type = types[i]];
-
+                type = type.split('.')[0];
                 // 没有注册过type事件
                 if(!hs){
                     hs = _events[type] = [];
@@ -76,7 +76,7 @@ define(["core","var/slice"], function(light, slice){
                 self.data('_event', {});
                 self.data('_delegete', {});
             }else{
-                if(hs = hs && hs[type]){
+                if(hs = hs && hs[type.split('.')[0]]){
                     if(!$.isFunction(handel)){
                         hs.length = 0
                     }else{
@@ -94,7 +94,7 @@ define(["core","var/slice"], function(light, slice){
                 args = [type, handel = selector]
             }
             handel.__isOne = true;
-            this.on.apply(this, args)
+            return this.on.apply(this, args)
         },
         /**
          * trigger event
@@ -108,6 +108,10 @@ define(["core","var/slice"], function(light, slice){
             return this.each(function(){
                 triggerHandel(args, this, type, {type: type, timeStamp: +new Date, isTrigger: true});
             })
+        },
+        hover: function (fnEnter, fnLeave){
+            return this.on('mouseenter', fnEnter)
+                .on('mouseleave', fnLeave)
         }
     });
 
@@ -117,7 +121,7 @@ define(["core","var/slice"], function(light, slice){
         }
     });
 
-    function triggerHandel(args, self, type, eve, selector){
+    function triggerHandel(args, self, type, eve){
         if(!type){return}
 
         // 1 trigger delegated events

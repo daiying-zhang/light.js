@@ -62,9 +62,6 @@ core = function (toString, slice, splice, rHtml, hasOwn) {
   $.extend({
     type: $type,
     isArray: $isArray,
-    isFunction: function (obj) {
-      return this.type(obj) === 'function';
-    },
     isString: $isString,
     isUndefined: function (obj) {
       return obj === undefined;
@@ -150,6 +147,7 @@ core = function (toString, slice, splice, rHtml, hasOwn) {
       try {
         result = slice.call(obj);
       } catch (e) {
+        // Support IE8
         var i = 0, len = obj.length;
         if ($.isNumber(len)) {
           for (; i < len; i++) {
@@ -161,7 +159,7 @@ core = function (toString, slice, splice, rHtml, hasOwn) {
     },
     unique: function (obj) {
       var tmp = [], index;
-      for (var i = 0; i < obj.length; i++) {
+      for (var i = 0, len = obj.length; i < len; i++) {
         if (~(index = tmp.indexOf(obj[i]))) {
           splice.call(obj, index, 1);
           i--;
@@ -563,6 +561,12 @@ traversing = function (light) {
 }(core);
 css = function (light) {
   light.fn.extend({
+    /**
+     * 设置或获取元素的样式
+     * @param {String}          key 需要设置或者获取的样式名称
+     * @param {String|Number}   val 需要设置的样式的值
+     * @returns {light|String|Number}
+     */
     css: function (key, val) {
       var type = $.type(key);
       // get
@@ -707,10 +711,22 @@ data = function (light) {
       });
     }
   });
+  light.data = function (dom, key, val) {
+    var $dom = light(dom);
+    return $dom.data.apply($dom, [].slice.call(arguments, 1));
+  };
   function getDateset(dom) {
     var data = getCacheObj(dom);
-    var dataset = dom.dataset;
-    //todo ie8 dataset
+    var dataset = dom.dataset, attributes, i = 0, len, tmp;
+    if (dataset === undefined && !light.isDocument(dom) && !light.isWindow(dom)) {
+      dataset = {};
+      attributes = dom.attributes;
+      for (len = attributes.length; i < len; i++) {
+        if (tmp = attributes[i].name.match(/^data\-(.+)$/)) {
+          dataset[tmp[1].camelize()] = attributes[i].value;
+        }
+      }
+    }
     return $.extend(true, data, dataset);
   }
   function getCacheObj(dom) {
@@ -731,8 +747,8 @@ data = function (light) {
 event = function (light, slice) {
   var addEventListener = document.body.addEventListener ? function (dom, typeName, fn) {
     dom.addEventListener(typeName, fn, false);
-  } : function (dom, typeNaem, fn) {
-    dom.attachEvent('on' + typeNaem, function () {
+  } : function (dom, typeName, fn) {
+    dom.attachEvent('on' + typeName, function () {
       fn.call(dom, window.event);
     });
   };
@@ -758,6 +774,7 @@ event = function (light, slice) {
       !_events && self.data('_event', _events = {});
       for (; i < len; i++) {
         hs = _events[type = types[i]];
+        type = type.split('.')[0];
         // 没有注册过type事件
         if (!hs) {
           hs = _events[type] = [];
@@ -788,8 +805,7 @@ event = function (light, slice) {
         self.data('_event', {});
         self.data('_delegete', {});
       } else {
-        hs = hs && hs[type];
-        if (hs) {
+        if (hs = hs && hs[type.split('.')[0]]) {
           if (!$.isFunction(handel)) {
             hs.length = 0;
           } else {
@@ -809,7 +825,7 @@ event = function (light, slice) {
         ];
       }
       handel.__isOne = true;
-      this.on.apply(this, args);
+      return this.on.apply(this, args);
     },
     /**
      * trigger event
@@ -827,6 +843,9 @@ event = function (light, slice) {
           isTrigger: true
         });
       });
+    },
+    hover: function (fnEnter, fnLeave) {
+      return this.on('mouseenter', fnEnter).on('mouseleave', fnLeave);
     }
   });
   light.each('mousedown mouseup click dblclick keyup keydown keypress blur focus change'.split(' '), function (i, e) {
@@ -834,7 +853,7 @@ event = function (light, slice) {
       light.isFunction(selector) ? this.on(e, selector) : this.on(e, selector, fn);
     };
   });
-  function triggerHandel(args, self, type, eve, selector) {
+  function triggerHandel(args, self, type, eve) {
     if (!type) {
       return;
     }
@@ -1038,7 +1057,23 @@ offset = function (light) {
       return 0;
     };
   });
+  light.each([
+    'scrollLeft',
+    'scrollTop'
+  ], function (i, e) {
+    light.fn[e] = function (scrollAmount) {
+      return this.each(function () {
+        this[e] = scrollAmount;
+      });
+    };
+  });
+  /*
+   * 获取bound
+   * @param dom
+   * @returns {*}
+   */
   function getBound(dom) {
+    // 如果是window，则获取`html`的位置和尺寸
     if (light.isWindow(dom)) {
       var html = dom.document.documentElement;
       return {
@@ -1053,6 +1088,10 @@ offset = function (light) {
     }
     return fixBound(dom ? $.extend({}, dom.getBoundingClientRect()) : null);
   }
+  /*
+   * 修正bound对象，`element.getBoundingClientRect()`相对于窗口
+   * 实际期望相对于文档
+   */
   function fixBound(bound) {
     var x, y, body = document.body, html = document.documentElement;
     if (bound) {

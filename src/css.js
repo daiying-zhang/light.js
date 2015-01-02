@@ -4,6 +4,12 @@
  */
 define(["core"], function(light){
     light.fn.extend({
+        /**
+         * 设置或获取元素的样式
+         * @param {String}          key 需要设置或者获取的样式名称
+         * @param {String|Number}   val 需要设置的样式的值
+         * @returns {light|String|Number}
+         */
         css: function (key, val){
             var type = $.type(key);
             // get

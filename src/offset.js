@@ -75,6 +75,14 @@ define(["core"], function(light){
         }
     });
 
+    light.each(['scrollLeft', 'scrollTop'], function(i,e){
+        light.fn[e] = function (scrollAmount){
+            return this.each(function(){
+                this[e] = scrollAmount
+            })
+        }
+    });
+
     /*
      * 获取bound
      * @param dom

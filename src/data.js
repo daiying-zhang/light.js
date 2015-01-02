@@ -60,7 +60,7 @@ define(["core"], function(light){
     function getDateset(dom){
         var data = getCacheObj(dom);
         var dataset = dom.dataset, attributes, i = 0, len, tmp;
-        if(dataset === undefined){
+        if(dataset === undefined && !light.isDocument(dom) && !light.isWindow(dom)){
             dataset = {};
             attributes = dom.attributes;
             for(len = attributes.length; i<len; i++){
@@ -69,7 +69,6 @@ define(["core"], function(light){
                 }
             }
         }
-        //todo ie8 dataset
         return $.extend(true, data, dataset)
     }
 
