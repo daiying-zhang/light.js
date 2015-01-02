@@ -8,3 +8,5 @@
 //TODO wrap() / wrapInner() / wrapAll()
 
 //TODO method like light.css() / light.data()
+
+//TODO event namespace

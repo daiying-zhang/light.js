@@ -52,6 +52,11 @@ define(["core"], function(light){
         }
     });
 
+    light.data = function(dom, key, val){
+        var $dom = light(dom);
+        return $dom.data.apply($dom, [].slice.call(arguments, 1))
+    };
+
     function getDateset(dom){
         var data = getCacheObj(dom);
         var dataset = dom.dataset, attributes, i = 0, len, tmp;
