@@ -295,6 +295,16 @@ manipulation = function (light) {
       }) : this[0] ? this[0].innerHTML : '';
     },
     /**
+     *
+     * @param html
+     * @returns {*}
+     */
+    outerHTML: function (html) {
+      return html ? this.each(function () {
+        this.outerHTML = html;
+      }) : this[0] ? this[0].outerHTML : '';
+    },
+    /**
      * 获取(设置)元素的textContent/innerText
      * @param {String} text 需要设置的文本
      * @returns {light|String}
@@ -718,7 +728,7 @@ data = function (light) {
   function getDateset(dom) {
     var data = getCacheObj(dom);
     var dataset = dom.dataset, attributes, i = 0, len, tmp;
-    if (dataset === undefined && !light.isDocument(dom) && !light.isWindow(dom)) {
+    if (dataset === undefined && !light.isDocument(dom) && !light.isWindow(dom) && dom.nodeType) {
       dataset = {};
       attributes = dom.attributes;
       for (len = attributes.length; i < len; i++) {
@@ -726,6 +736,8 @@ data = function (light) {
           dataset[tmp[1].camelize()] = attributes[i].value;
         }
       }
+    } else {
+      dataset = {};
     }
     return $.extend(true, data, dataset);
   }
@@ -779,7 +791,7 @@ event = function (light, slice) {
         if (!hs) {
           hs = _events[type] = [];
           self.each(function (i, ele) {
-            addEventListener(ele, type, function (eve) {
+            ele.nodeType && addEventListener(ele, type, function (eve) {
               triggerHandel(null, ele, type, fixEvent(eve, ele));
             });  //ele = null
           });

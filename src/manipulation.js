@@ -15,6 +15,16 @@ define(["core"], function(light){
             }) : this[0] ? this[0].innerHTML : ""
         },
         /**
+         *
+         * @param html
+         * @returns {*}
+         */
+        outerHTML: function(html){
+            return html ? this.each(function(){
+                this.outerHTML = html
+            }) : this[0] ? this[0].outerHTML : ""
+        },
+        /**
          * 获取(设置)元素的textContent/innerText
          * @param {String} text 需要设置的文本
          * @returns {light|String}

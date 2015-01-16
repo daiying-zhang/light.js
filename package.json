@@ -1,0 +1,21 @@
+{
+  "name": "light",
+  "version": "1.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daiying-zhang/light.js.git"
+  },
+  "keywords": [
+
+  ],
+  "author": {
+    "name": "Daiying Zhang",
+    "url": "http://imf2e.com"
+  },
+  "scripts": {
+  },
+  "devDependencies": {
+    "amdclean": "~2.4.0"
+  }
+}

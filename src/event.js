@@ -48,7 +48,7 @@ define(["core","var/slice"], function(light, slice){
                 if(!hs){
                     hs = _events[type] = [];
                     self.each(function(i, ele){
-                        addEventListener(ele, type, function(eve){
+                        ele.nodeType && addEventListener(ele, type, function(eve){
                             triggerHandel(null, ele, type, fixEvent(eve, ele))
                         });
                         //ele = null
