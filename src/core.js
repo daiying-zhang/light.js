@@ -229,7 +229,8 @@ function(toString, slice, splice, rHtml, hasOwn){
             return this.prevObject
         },
         eq: function(index){
-            return this.pushState([this[index]])
+            var ele = this[index];
+            return this.pushState(ele ? [ele] : [])
         },
         gt: function (index){
             return this.pushState(this.slice(index + 1))

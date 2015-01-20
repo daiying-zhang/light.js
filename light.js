@@ -220,7 +220,8 @@ core = function (toString, slice, splice, rHtml, hasOwn) {
       return this.prevObject;
     },
     eq: function (index) {
-      return this.pushState([this[index]]);
+      var ele = this[index];
+      return this.pushState(ele ? [ele] : []);
     },
     gt: function (index) {
       return this.pushState(this.slice(index + 1));
@@ -290,7 +291,7 @@ manipulation = function (light) {
      * @returns {String|light}
      */
     html: function (htmlString) {
-      return htmlString ? this.each(function () {
+      return htmlString !== undefined ? this.each(function () {
         this.innerHTML = htmlString;
       }) : this[0] ? this[0].innerHTML : '';
     },
@@ -300,7 +301,7 @@ manipulation = function (light) {
      * @returns {*}
      */
     outerHTML: function (html) {
-      return html ? this.each(function () {
+      return html !== undefined ? this.each(function () {
         this.outerHTML = html;
       }) : this[0] ? this[0].outerHTML : '';
     },
@@ -311,7 +312,7 @@ manipulation = function (light) {
      */
     text: function (text) {
       //IE8 support
-      var propName = 'textContent' in this[0] ? 'textContent' : 'innerText';
+      var propName = 'textContent' in document.body ? 'textContent' : 'innerText';
       return arguments.length ? this.each(function () {
         this[propName] = text;
       }) : this[0] ? this[0].textContent || this[0].innerHTML.replace(/<[^>]+>/g, '') : '';
@@ -678,6 +679,9 @@ data = function (light) {
   light.fn.extend({
     data: function (key, val) {
       // .data() ==> all the data
+      if (!this.length) {
+        return {};
+      }
       var dom = this[0], data = getDateset(dom), len = arguments.length;
       if (!len) {
         var _data = $.extend(true, {}, data);
@@ -727,8 +731,8 @@ data = function (light) {
   };
   function getDateset(dom) {
     var data = getCacheObj(dom);
-    var dataset = dom.dataset, attributes, i = 0, len, tmp;
-    if (dataset === undefined && !light.isDocument(dom) && !light.isWindow(dom) && dom.nodeType) {
+    var dataset = dom.nodeType ? dom.dataset : {}, attributes, i = 0, len, tmp;
+    if (dataset == undefined && !light.isDocument(dom) && !light.isWindow(dom)) {
       dataset = {};
       attributes = dom.attributes;
       for (len = attributes.length; i < len; i++) {
@@ -736,8 +740,6 @@ data = function (light) {
           dataset[tmp[1].camelize()] = attributes[i].value;
         }
       }
-    } else {
-      dataset = {};
     }
     return $.extend(true, data, dataset);
   }
@@ -849,10 +851,13 @@ event = function (light, slice) {
     trigger: function (type) {
       var args = arguments;
       return this.each(function () {
-        triggerHandel(args, this, type, {
-          type: type,
-          timeStamp: +new Date(),
-          isTrigger: true
+        var self = this;
+        $.each(type.split(' '), function (i, type) {
+          triggerHandel(args, self, type, {
+            type: type,
+            timeStamp: +new Date(),
+            isTrigger: true
+          });
         });
       });
     },
@@ -989,7 +994,7 @@ attr = function (light) {
   });
   function access(dom, type, key, val) {
     if (type === 'attr') {
-      if (val) {
+      if (val !== undefined) {
         dom.setAttribute(key, val);
       } else {
         return dom.getAttribute(key);

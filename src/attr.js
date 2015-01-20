@@ -40,7 +40,7 @@ define(["core"], function(light){
 
     function access(dom, type, key, val){
         if(type === 'attr'){
-            if(val){
+            if(val !== undefined){
                 dom.setAttribute(key, val)
             }else{
                 return dom.getAttribute(key)

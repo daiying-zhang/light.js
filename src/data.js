@@ -6,6 +6,9 @@ define(["core"], function(light){
     light.fn.extend({
         data: function (key, val){
             // .data() ==> all the data
+            if(!this.length){
+                return {}
+            }
             var dom = this[0],
                 data = getDateset(dom),
                 len = arguments.length;
@@ -59,8 +62,8 @@ define(["core"], function(light){
 
     function getDateset(dom){
         var data = getCacheObj(dom);
-        var dataset = dom.dataset, attributes, i = 0, len, tmp;
-        if(dataset === undefined && !light.isDocument(dom) && !light.isWindow(dom) && dom.nodeType){
+        var dataset = dom.nodeType ? dom.dataset : {}, attributes, i = 0, len, tmp;
+        if(dataset == undefined && !light.isDocument(dom) && !light.isWindow(dom)){
             dataset = {};
             attributes = dom.attributes;
             for(len = attributes.length; i<len; i++){
@@ -68,8 +71,6 @@ define(["core"], function(light){
                     dataset[tmp[1].camelize()] = attributes[i].value
                 }
             }
-        }else{
-            dataset = {}
         }
         return $.extend(true, data, dataset)
     }

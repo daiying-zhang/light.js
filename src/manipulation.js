@@ -10,7 +10,7 @@ define(["core"], function(light){
          * @returns {String|light}
          */
         html: function (htmlString){
-            return htmlString ? this.each(function(){
+            return htmlString !== undefined ? this.each(function(){
                 this.innerHTML = htmlString
             }) : this[0] ? this[0].innerHTML : ""
         },
@@ -20,7 +20,7 @@ define(["core"], function(light){
          * @returns {*}
          */
         outerHTML: function(html){
-            return html ? this.each(function(){
+            return html !== undefined ? this.each(function(){
                 this.outerHTML = html
             }) : this[0] ? this[0].outerHTML : ""
         },
@@ -31,7 +31,7 @@ define(["core"], function(light){
          */
         text: function (text){
             //IE8 support
-            var propName = "textContent" in this[0] ? "textContent" : "innerText";
+            var propName = "textContent" in document.body ? "textContent" : "innerText";
             return arguments.length ? this.each(function(){
                 this[propName] = text
             }) : this[0] ? this[0].textContent || this[0].innerHTML.replace(/<[^>]+>/g, "") : ""

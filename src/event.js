@@ -106,7 +106,10 @@ define(["core","var/slice"], function(light, slice){
         trigger : function(type){
             var args = arguments;
             return this.each(function(){
-                triggerHandel(args, this, type, {type: type, timeStamp: +new Date, isTrigger: true});
+                var self = this;
+                $.each(type.split(' '), function(i, type){
+                    triggerHandel(args, self, type, {type: type, timeStamp: +new Date, isTrigger: true});
+                })
             })
         },
         hover: function (fnEnter, fnLeave){
