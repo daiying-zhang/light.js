@@ -9,6 +9,7 @@ define([
     "css",
     "data",
     "event",
+    "helper",
     "attr",
     "offset",
     "ajax"
