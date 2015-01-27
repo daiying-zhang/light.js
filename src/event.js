@@ -33,6 +33,7 @@ define(["core","var/slice"], function(light, slice){
             }
             var hs,
                 types = type.split(/\s+/),
+                nameSpace = '',
                 len = types.length,
                 i = 0,
                 self = this,
@@ -42,8 +43,17 @@ define(["core","var/slice"], function(light, slice){
             !_events && self.data('_event',_events = {});
 
             for(; i<len; i++){
-                hs = _events[type = types[i]];
-                type = type.split('.')[0];
+                type = types[i];
+                type = (nameSpace = type.split('.'))[0];
+                nameSpace = nameSpace[1] || '';
+
+                if($.isArray(handel.namespace)){
+                    handel.namespace.push(nameSpace)
+                }else{
+                    handel.namespace = [nameSpace]
+                }
+
+                hs = _events[type];
                 // 没有注册过type事件
                 if(!hs){
                     hs = _events[type] = [];
@@ -128,8 +138,17 @@ define(["core","var/slice"], function(light, slice){
         if(!type){return}
 
         // 1 trigger delegated events
-        var hs = $(self).data('_delegate'), i = 0, args = args && slice.call(args, 1);
-        var $closest;
+        var hs = $(self).data('_delegate'),
+            i = 0,
+            $closest,
+            typeAndNamespace = type.split('.'),
+            namespace;
+
+        type = typeAndNamespace[0];
+        namespace = typeAndNamespace[1];
+
+        args = args && slice.call(args, 1);
+
         // 事件类型`type`对应的处理函数对象
         hs = hs && hs[type];
 
@@ -167,13 +186,16 @@ define(["core","var/slice"], function(light, slice){
                     if(eve.isImmediatePropagationStopped){
                         break
                     }
-                    if(hs[i].apply(self, _args) === false){
-                        eve.stopPropagation();
-                        eve.preventDefault();
-                    }
-                    // 如果是用`.one()`绑定的方法，执行后立即删除
-                    if(hs[i].__isOne === true){
-                        hs.splice(i--, 1);
+                    if(!namespace || ~hs[i].namespace.indexOf(namespace)){
+                        if(hs[i].apply(self, _args) === false){
+                            eve.stopPropagation();
+                            eve.preventDefault();
+                        }
+                        console.warn("the namespace ===", hs[i].namespace);
+                        // 如果是用`.one()`绑定的方法，执行后立即删除
+                        if(hs[i].__isOne === true){
+                            hs.splice(i--, 1);
+                        }
                     }
                 }
             }

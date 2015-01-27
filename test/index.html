@@ -122,15 +122,15 @@
 //        console.log("span.cls is clicked...")
 //        e.stopPropagation()
 //    });
-    $('body').on('click', function(){
-        console.warn('body clicked')
-    });
+//    $('body').on('click', function(){
+//        console.warn('body clicked')
+//    });
 
 
-    $('body').click('#a', function (){
-        console.warn('this is a event handel from $("body").click("#a", fn)');
-        return false
-    });
+//    $('body').click('#a', function (){
+//        console.warn('this is a event handel from $("body").click("#a", fn)');
+//        return false
+//    });
     $('#a').click(function (eve){
         console.warn('this is a event handel from $("#a").click(fn)');
         eve.preventDefault()
@@ -177,13 +177,13 @@
     });
 
 // test hover
-$('#a').hover(function(){
-    console.log("enter");
-    $(this).css('color', 'red');
-}, function(){
-    console.log("leave");
-    $(this).css('color', 'black');
-})
+//$('#a').hover(function(){
+//    console.log("enter");
+//    $(this).css('color', 'red');
+//}, function(){
+//    console.log("leave");
+//    $(this).css('color', 'black');
+//})
 
 //    $.ajaxSetup({
 //        domain: 'www.zdying.com'
@@ -241,6 +241,17 @@ $('#a').hover(function(){
     $(window).on('resize', function(){
         console.log("resize....")
     })
+
+    $(document).on('click.aaa', function(eve){
+        console.log("click.aaa")
+    });
+    $(document).on('click.bbb', function(eve){
+        console.log("click.bbb")
+    })
+
+    setTimeout(function(){
+        $(document).trigger('click')
+    },2000)
 </script>
 </body>
 </html>

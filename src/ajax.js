@@ -55,7 +55,7 @@ define(["core"], function(light){
                 xhr.open(type, config.url, true);
                 //POST
                 type === 'POST' && xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
-                xhr.send(params);
+                xhr.send(encodeURIComponent(params));
             }catch(e){
                 // 如果send()或者open()报错(比如跨域)，IE8 会捕获异常
                 fireHandel(handels, 'fail', xhr)
@@ -139,8 +139,10 @@ define(["core"], function(light){
         var data = xhr.response;
         var type = (options.dataType || 'json').toLowerCase();
 
-        if(type === 'json' || contentType.match(/application\/json/)){
+        if(type === 'json' || contentType.match(/application\/json/)) {
             return JSON.parse(data)
+        }else if(type === 'jsonp'){
+            //TODO ...
         }else if(type === 'xml'){
             return xhr.responseXML
         }else if(type === 'script'){
