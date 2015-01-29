@@ -55,7 +55,7 @@ define(["core"], function(light){
                 xhr.open(type, config.url, true);
                 //POST
                 type === 'POST' && xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
-                xhr.send(encodeURIComponent(params));
+                xhr.send(params);
             }catch(e){
                 // 如果send()或者open()报错(比如跨域)，IE8 会捕获异常
                 fireHandel(handels, 'fail', xhr)
@@ -128,7 +128,7 @@ define(["core"], function(light){
         var str = [];
         return light.isString(data) ? data : (function(){
             light.each(data, function(k, v){
-                str.push(k + '=' + v)
+                str.push(k + '=' + encodeURIComponent(v))
             });
             return str.join('&')
         })()

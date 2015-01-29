@@ -58,7 +58,7 @@ define(["core","var/slice"], function(light, slice){
                 if(!hs){
                     hs = _events[type] = [];
                     self.each(function(i, ele){
-                        ele.nodeType && addEventListener(ele, type, function(eve){
+                        (ele.nodeType || $.isWindow(ele)) && addEventListener(ele, type, function(eve){
                             triggerHandel(null, ele, type, fixEvent(eve, ele))
                         });
                         //ele = null
@@ -191,7 +191,6 @@ define(["core","var/slice"], function(light, slice){
                             eve.stopPropagation();
                             eve.preventDefault();
                         }
-                        console.warn("the namespace ===", hs[i].namespace);
                         // 如果是用`.one()`绑定的方法，执行后立即删除
                         if(hs[i].__isOne === true){
                             hs.splice(i--, 1);

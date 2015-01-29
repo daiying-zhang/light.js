@@ -3,7 +3,7 @@
  * @fileOverview
  * @author daiying.zhang
  */
-var var_toString, var_slice, var_splice, var_rHTMLTag, var_hasOwn, core, manipulation, traversing, css, data, event, attr, offset, ajax, light;
+var var_toString, var_slice, var_splice, var_rHTMLTag, var_hasOwn, core, manipulation, traversing, css, data, event, helper, attr, offset, ajax, light;
 var_toString = Object.prototype.toString;
 var_slice = [].slice;
 var_splice = [].splice;
@@ -800,7 +800,7 @@ event = function (light, slice) {
         if (!hs) {
           hs = _events[type] = [];
           self.each(function (i, ele) {
-            ele.nodeType && addEventListener(ele, type, function (eve) {
+            (ele.nodeType || $.isWindow(ele)) && addEventListener(ele, type, function (eve) {
               triggerHandel(null, ele, type, fixEvent(eve, ele));
             });  //ele = null
           });
@@ -923,7 +923,6 @@ event = function (light, slice) {
               eve.stopPropagation();
               eve.preventDefault();
             }
-            console.warn('the namespace ===', hs[i].namespace);
             // 如果是用`.one()`绑定的方法，执行后立即删除
             if (hs[i].__isOne === true) {
               hs.splice(i--, 1);
@@ -966,6 +965,44 @@ event = function (light, slice) {
     return eve;
   }
 }(core, var_slice);
+helper = function (light) {
+  var r20 = /%20/g;
+  light.param = function (obj, traditional) {
+    var params = [], escape = encodeURIComponent;
+    params.add = function (key, val) {
+      if (light.isFunction(val))
+        val = val();
+      this.push(escape(key) + '=' + escape(val));
+    };
+    if (light.isArray(obj)) {
+      light.each(obj, function () {
+        params.add(this.name, this.value);
+      });
+    } else {
+      for (key in obj) {
+        buildParams(key, obj[key], traditional, params);
+      }
+    }
+    return params.join('&').replace(r20, '+');
+  };
+  function buildParams(key, obj, traditional, params) {
+    if (light.isArray(obj)) {
+      light.each(obj, function (i, val) {
+        if (traditional) {
+          params.add(key, val);
+        } else {
+          buildParams(key + '[' + (typeof val == 'object' ? i : '') + ']', val, traditional, params);
+        }
+      });
+    } else if (!traditional && light.type(obj) == 'object') {
+      for (name in obj) {
+        buildParams(key + '[' + name + ']', obj[name], traditional, params);
+      }
+    } else {
+      params.add(key, obj);
+    }
+  }
+}(core);
 attr = function (light) {
   light.each([
     'attr',
@@ -1189,7 +1226,7 @@ ajax = function (light) {
         xhr.open(type, config.url, true);
         //POST
         type === 'POST' && xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
-        xhr.send(encodeURIComponent(params));
+        xhr.send(params);
       } catch (e) {
         // 如果send()或者open()报错(比如跨域)，IE8 会捕获异常
         fireHandel(handels, 'fail', xhr);
@@ -1264,7 +1301,7 @@ ajax = function (light) {
     var str = [];
     return light.isString(data) ? data : function () {
       light.each(data, function (k, v) {
-        str.push(k + '=' + v);
+        str.push(k + '=' + encodeURIComponent(v));
       });
       return str.join('&');
     }();
