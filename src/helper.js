@@ -3,9 +3,32 @@
  * @author xing.wu
  */
 
-//todo param
 define(['core'], function(light){
-	var r20 = /%20/g;
+	var r20 = /%20/g,
+        einput = /^(?:submit|reset|file|button)$/;
+
+    light.fn.extend({
+        serializeArray: function(){
+            return light.param( this.serialize() );
+        },
+        serialize: function(){
+            var name, type, result = [],
+            add = function(n, val){
+                if(light.isArray(val)) return light.each(val, add);
+                result.push({name: n, value: val});
+            };
+
+            if(this[0]){
+                light.each(this[0].elements, function(i, ele){
+                    name = ele.name, type = ele.type;
+                    if(name && !ele.disabled && (ele.checked || !einput.test(type) ) ){
+                        add(name, light(ele).val());
+                    }
+                });
+            }
+            return result;
+        }
+    });
 
 	light.param = function(obj, traditional){
 		var params = [],
@@ -47,12 +70,4 @@ define(['core'], function(light){
 			params.add(key, obj);
 		}
 	}
-})
-
-
-
-
-
-//todo serialize
-
-//todo serializeArray
+});
